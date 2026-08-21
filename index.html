@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>英語話劇台詞接龍 | Drama Chain</title>
+  <style>
+    :root {
+      --bg:#0f1419;--card:#1a2332;--card2:#243044;--primary:#3b82f6;--primary-h:#2563eb;
+      --success:#22c55e;--danger:#ef4444;--text:#e2e8f0;--muted:#94a3b8;--border:#334155;--hl:#fbbf24;--radius:12px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;-webkit-tap-highlight-color:transparent}
+    .container{max-width:720px;margin:0 auto;padding:16px 16px 80px}
+    h1{font-size:1.4rem;margin-bottom:4px}h2{font-size:1.2rem;margin-bottom:12px}h3{font-size:1rem;margin-bottom:8px}
+    .muted{color:var(--muted);font-size:.85rem}
+    .card{background:var(--card);border-radius:var(--radius);padding:18px;margin-bottom:14px;border:1px solid var(--border)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:13px 18px;border:none;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;width:100%;min-height:48px;transition:.15s;-webkit-user-select:none;user-select:none}
+    .btn:active{transform:scale(.97)}.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-h)}
+    .btn-sec{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+    .btn-outline{background:transparent;border:2px solid var(--border);color:var(--text)}
+    .btn-outline.sel{border-color:var(--primary);background:rgba(59,130,246,.18);color:#93c5fd}
+    .btn-sm{padding:9px 14px;font-size:.85rem;min-height:38px;width:auto}
+    .btn-group{display:flex;flex-direction:column;gap:10px}
+    .btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    @media(min-width:480px){.btn-grid{grid-template-columns:1fr 1fr 1fr}}
+    .role-btn{padding:11px 8px;font-size:.8rem;text-align:center;word-break:break-word}
+    .opt{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:13px;cursor:pointer;font-size:.92rem;text-align:left;transition:.15s}
+    .opt:hover{border-color:var(--primary)}.opt.ok{border-color:var(--success);background:rgba(34,197,94,.15)}.opt.ng{border-color:var(--danger);background:rgba(239,68,68,.15)}
+    .prev{background:var(--card2);border-left:4px solid var(--primary);padding:14px;border-radius:0 10px 10px 0;margin-bottom:16px}
+    .prev .spk{color:var(--primary);font-weight:700;font-size:.85rem;margin-bottom:2px}.prev .tx{font-size:1.02rem}
+    .bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:12px;font-size:.85rem}
+    .chip{background:var(--card2);padding:5px 11px;border-radius:20px}.chip b{color:var(--hl)}
+    input[type=text],input[type=password]{width:100%;padding:13px;border:2px solid var(--border);border-radius:10px;background:var(--card2);color:var(--text);font-size:1rem;outline:none}
+    input:focus{border-color:var(--primary)}
+    .chk-g{display:flex;flex-direction:column;gap:6px}
+    .chk{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card2);border-radius:8px;cursor:pointer}
+    .chk input{width:18px;height:18px;accent-color:var(--primary)}
+    .rad-g{display:flex;flex-direction:column;gap:6px}
+    .rad{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--card2);border-radius:8px;cursor:pointer;border:2px solid transparent}
+    .rad.on{border-color:var(--primary);background:rgba(59,130,246,.12)}
+    .rad input{width:16px;height:16px;accent-color:var(--primary)}
+    .hidden{display:none!important}
+    .box{padding:14px;border-radius:10px;margin:12px 0;text-align:center}
+    .box.ok{background:rgba(34,197,94,.15);border:1px solid var(--success)}
+    .box.ng{background:rgba(239,68,68,.15);border:1px solid var(--danger)}
+    .sline{padding:9px 12px;border-bottom:1px solid var(--border);font-size:.92rem}
+    .sline.hl{background:rgba(251,191,36,.14);border-left:3px solid var(--hl)}
+    .sline .spk{color:var(--primary);font-weight:600}
+    .sline.stage{color:var(--muted);font-style:italic;font-size:.85rem;background:rgba(148,163,184,.06)}
+    .act-h{background:var(--card2);padding:10px 14px;font-weight:700;margin-top:14px;border-radius:8px;position:sticky;top:0;z-index:5}
+    .tabs{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto}
+    .tab{padding:9px 14px;background:var(--card2);border:none;border-radius:8px;color:var(--muted);font-weight:600;cursor:pointer;white-space:nowrap;font-size:.85rem}
+    .tab.on{background:var(--primary);color:#fff}
+    .mist{background:var(--card2);padding:12px;border-radius:8px;margin-bottom:8px;font-size:.88rem;display:flex;gap:10px;align-items:flex-start}
+    .badge{min-width:24px;height:24px;border-radius:50%;background:var(--danger);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+    .lb-item{display:flex;align-items:center;gap:12px;padding:11px;background:var(--card2);border-radius:8px;margin-bottom:6px}
+    .rank{width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem}
+    .rank.g{background:#fbbf24;color:#000}.rank.s{background:#94a3b8;color:#000}.rank.b{background:#b45309;color:#fff}
+    .nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:6px 0;z-index:100}
+    .nav button{background:none;border:none;color:var(--muted);font-size:.7rem;padding:5px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
+    .nav button.on{color:var(--primary)}.nav button span{font-size:1.25rem}
+    .prog{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:12px}.prog>div{height:100%;background:var(--primary);transition:width .3s}
+    .ac{position:absolute;background:var(--card);border:1px solid var(--border);border-radius:8px;max-height:120px;overflow-y:auto;width:auto;min-width:120px;z-index:20;box-shadow:0 4px 16px rgba(0,0,0,.35)}
+    .ac div{padding:8px 12px;cursor:pointer;font-size:.88rem}.ac div:hover{background:var(--card2)}
+    .rel{position:relative}
+    .toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);padding:11px 18px;border-radius:10px;z-index:200;animation:fi .3s}
+    @keyframes fi{from{opacity:0;transform:translateX(-50%) translateY(-8px)}}
+    .empty{text-align:center;padding:36px 16px;color:var(--muted)}
+    .gate{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
+    .gate-box{background:var(--card);border-radius:14px;padding:24px;width:100%;max-width:360px;border:1px solid var(--border);text-align:center}
+    .seg{display:flex;gap:6px;flex-wrap:wrap}.seg .btn-outline{width:auto;flex:1;min-width:70px;padding:10px 8px;font-size:.85rem}
+    .spin{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-left:6px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    .note{font-size:.78rem;color:var(--muted);margin-top:6px}
+  </style>
+</head>
+<body>
+  <div class="container" id="app"></div>
+  <nav class="nav" id="nav">
+    <button class="on" data-s="home"><span>🏠</span>首頁</button>
+    <button data-s="practice"><span>🎯</span>練習</button>
+    <button data-s="mistakes"><span>📕</span>錯題</button>
+    <button data-s="leaderboard"><span>🏆</span>排行</button>
+    <button data-s="script"><span>📖</span>劇本</button>
+  </nav>
+
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD74r_cTZiiAX9_lk9ScQBsRvmo_8WPls8",
+  authDomain: "english-drama-chain.firebaseapp.com",
+  projectId: "english-drama-chain",
+  storageBucket: "english-drama-chain.firebasestorage.app",
+  messagingSenderId: "527092311108",
+  appId: "1:527092311108:web:efd3556750d0ccba884811"
+};
+const appFb = initializeApp(firebaseConfig);
+const db = getFirestore(appFb);
+const CLASS_PWD = "201drama";
+
+const RAW = [
+  {act:"Act I",scene:"Scene 1",spk:["Narrator"],tx:"It was 1431. After being defeated in battle, Joan of Arc was captured by the English. Accused of twelve criminal charges, she was sentenced to death by burning."},
+  {act:"Act I",scene:"Scene 1",spk:["English Officer"],tx:"Burn the witch!"},
+  {act:"Act I",scene:"Scene 1",spk:["Crowd"],tx:"Burn the witch!"},
+  {act:"Act I",scene:"Scene 1",spk:["Joan"],tx:"I have already sworn my soul to the son. I must keep my vow to Him."},
+  {act:"Act I",scene:"Scene 1",spk:["English Officer"],tx:"Heretic, in men's clothes against nature, blaspheming God to deceive all—face justice in fire!"},
+  {act:"Act I",scene:"Scene 1",spk:["Gilles"],tx:"Stop! I beg you, stop! She is no witch!"},
+  {act:"Act I",scene:"Scene 1",spk:["English Officer"],tx:"Execute the witch! Now!"},
+  {act:"Act I",scene:"Scene 1",spk:["Narrator"],tx:"Joan was fully engulfed in flames, fire mercilessly climbing toward her shoulders."},
+  {act:"Act I",scene:"Scene 1",spk:["Joan"],tx:"No!"},
+  {act:"Act I",scene:"Scene 1",spk:["Narrator"],tx:"Gilles left the square. Watching his comrade wilt in the flames one by one, his heart grew cold and dark. In his darkest moments, he began his descent into the world of black magic."},
+  {act:"Act I",scene:"Scene 2",spk:["Gilles"],tx:"Joan... you saved me once. Now, I must find a way to bring you back. If only I could start over, I would protect you from all danger and suffering!"},
+  {act:"Act I",scene:"Scene 2",spk:["Gilles"],tx:"My holy father... if thou wilt not answer, then allow the Dark Arts to guide me! I wish I could summon a person who can truly aid Joan. Grant me someone to save her! Amen!"},
+  {act:"Act II",scene:"Scene 1",spk:["Narrator"],tx:"It is 2026. A group of high school students is visiting a local museum."},
+  {act:"Act II",scene:"Scene 1",spk:["Teacher"],tx:"Students, please look at this. This is one of the most famous figures in French history: Joan of Arc. In the 15th century, she led the French army against the English and was regarded as a national hero. However, unfortunately, she was eventually captured and convicted of heresy at the age of nineteen."},
+  {act:"Act II",scene:"Scene 1",spk:["Teacher"],tx:"In the end, she was burned at the stake!"},
+  {act:"Act II",scene:"Scene 1",spk:["Student A"],tx:"That's so upsetting..."},
+  {act:"Act II",scene:"Scene 1",spk:["Student B"],tx:"She was merely nineteen!"},
+  {act:"Act II",scene:"Scene 1",spk:["Tim"],tx:"The stories of a hero always turn out to be tragic."},
+  {act:"Act II",scene:"Scene 1",spk:["Teacher"],tx:"Hey! Tim, pay attention!"},
+  {act:"Act II",scene:"Scene 1",spk:["Teacher"],tx:"Legend has it that Joan had a companion named Gilles. It's said that after her death, consumed by grief and regret, he turned to the dark arts. He even wrote a..."},
+  {act:"Act II",scene:"Scene 1",spk:["Teacher"],tx:"...\"Cursed Grimoire\"!"},
+  {act:"Act II",scene:"Scene 1",spk:["Student A","Student B"],tx:"Ahh!!"},
+  {act:"Act II",scene:"Scene 1",spk:["Tim"],tx:"Oh, come on. It is now the 21st century. Grimoires? Really?"},
+  {act:"Act II",scene:"Scene 1",spk:["Teacher"],tx:"And the book is said to still exist to this day."},
+  {act:"Act II",scene:"Scene 1",spk:["Tim"],tx:"\"15th Century Anonymous Grimoire? Do Not Open\"? Wow. This looks like it's falling apart."},
+  {act:"Act II",scene:"Scene 1",spk:["Tim"],tx:"Yew…It even bears a weird smell."},
+  {act:"Act II",scene:"Scene 1",spk:["Tim"],tx:"Well... one quick peek shouldn't hurt, right?"},
+  {act:"Act II",scene:"Scene 1",spk:["Tim"],tx:"Oh my goodness!"},
+  {act:"Act III",scene:"Scene 1",spk:["Narrator"],tx:"It was 1431, the Battle of Jargeau, when there were merely two weeks remaining from the execution of Joan of Arc. In a fog-surrounded forest, the French army lies in wait, with their movements ghostly and silent."},
+  {act:"Act III",scene:"Scene 1",spk:["Gilles"],tx:"It was legendary for you to be so brave in the battle last week. It's hard to believe that you were just a simple country girl a year ago."},
+  {act:"Act III",scene:"Scene 1",spk:["Joan"],tx:"These victories are all the will of God. It is He who guides me through these battles."},
+  {act:"Act III",scene:"Scene 1",spk:["Gilles"],tx:"It's a bit unusual for mist to be so thick at this hour, isn't it?"},
+  {act:"Act III",scene:"Scene 1",spk:["Joan"],tx:"True. Let us hope this is a gift from God, which may ensure the success of our ambush."},
+  {act:"Act III",scene:"Scene 1",spk:["Gilles"],tx:"The foes are here!"},
+  {act:"Act III",scene:"Scene 1",spk:["Tim"],tx:"Where the hell am I?! Hey! Are you guys filming a movie? Wow, this prop looks so real!"},
+  {act:"Act III",scene:"Scene 1",spk:["Gilles"],tx:"What a fool!"},
+  {act:"Act III",scene:"Scene 1",spk:["Joan"],tx:"Wait! Stop! Don't be so hasty. His clothes doesn't look like English uniforms."},
+  {act:"Act III",scene:"Scene 1",spk:["Tim"],tx:"Oh, wow! The ground is shaking! high-budget production, huh!"},
+  {act:"Act III",scene:"Scene 1",spk:["Gilles"],tx:"Shh! They are coming. Get ready!"},
+  {act:"Act III",scene:"Scene 1",spk:["Tim"],tx:"Ready for what? Have the cameras started rolling?"},
+  {act:"Act III",scene:"Scene 1",spk:["Gilles"],tx:"Shut up. If you want to survive this, remain silent."},
+  {act:"Act III",scene:"Scene 1",spk:["Joan"],tx:"I don't know who you are, but please—run while you still can."},
+  {act:"Act III",scene:"Scene 1",spk:["Narrator"],tx:"While Joan and Gilles were distracted by the stranger, the English army arrived. However, a sudden, dramatic twist was about to occur."},
+  {act:"Act III",scene:"Scene 1",spk:["Gilles"],tx:"What the hell is this sound?!"},
+  {act:"Act III",scene:"Scene 1",spk:["Tim"],tx:"Oh no..."},
+  {act:"Act III",scene:"Scene 1",spk:["English Soldier B"],tx:"Someone's there!"},
+  {act:"Act III",scene:"Scene 1",spk:["Joan"],tx:"It's too late. We must fight!"},
+  {act:"Act III",scene:"Scene 1",spk:["Joan"],tx:"All troops, ambush! Charge!"},
+  {act:"Act III",scene:"Scene 1",spk:["English Officer"],tx:"An ambush! To arms! Defend yourselves!"},
+  {act:"Act III",scene:"Scene 1",spk:["Tim"],tx:"Hey! Are you actually fighting? Ain't this a movie? This is dangerous!"},
+  {act:"Act III",scene:"Scene 1",spk:["Joan"],tx:"In the name of the Father, the Son, and the Holy Spirit—Fight!"},
+  {act:"Act III",scene:"Scene 1",spk:["Narrator"],tx:"Unfortunately, more English reinforcements emerge from the shadows. The French are being surrounded."},
+  {act:"Act III",scene:"Scene 1",spk:["English Officer"],tx:"Seize the witch! For our glorious Father!"},
+  {act:"Act III",scene:"Scene 1",spk:["Tim"],tx:"No way... You guys are actually at war?!"},
+  {act:"Act III",scene:"Scene 1",spk:["Gilles"],tx:"Obviously! Why aren't you running yet?!"},
+  {act:"Act III",scene:"Scene 1",spk:["English Soldier B"],tx:"What is this dark magic?! Look at the flag!"},
+  {act:"Act III",scene:"Scene 1",spk:["Tim"],tx:"Haha! Behold the power of science!"},
+  {act:"Act III",scene:"Scene 1",spk:["English Officer"],tx:"You dare use sorcery to burn our banner?! Sacrilege!"},
+  {act:"Act III",scene:"Scene 1",spk:["Tim"],tx:"See? This is God's punishment for you, big-mouthed idiots!"},
+  {act:"Act III",scene:"Scene 1",spk:["Gilles"],tx:"That's what you get for insulting our Saint!"},
+  {act:"Act III",scene:"Scene 1",spk:["English Soldier A"],tx:"WHY?! Why would God burn our flag? Is he trying to start a barbecue?!"},
+  {act:"Act III",scene:"Scene 1",spk:["English Private"],tx:"Sir, we have to retreat!"},
+  {act:"Act III",scene:"Scene 1",spk:["English Officer"],tx:"Curse you! Retreat! But mark my words... this isn't over!"},
+  {act:"Act IV",scene:"Scene 1",spk:["Narrator"],tx:"In the English camp, the atmosphere is heavy. The wounded are silent in their fear. The Officer looks on with chilling indifference."},
+  {act:"Act IV",scene:"Scene 1",spk:["Officer"],tx:"I know everything. I know which of you was the first to tuck tail and run."},
+  {act:"Act IV",scene:"Scene 1",spk:["Officer"],tx:"And... you."},
+  {act:"Act IV",scene:"Scene 1",spk:["Lackey"],tx:"Me? Mercy, sir! What did I do wrong?"},
+  {act:"Act IV",scene:"Scene 1",spk:["Officer"],tx:"What does \"using our sacred Empire's flag for a barbecue\" mean then? You were the one who started the panic!"},
+  {act:"Act IV",scene:"Scene 1",spk:["Lackey"],tx:"It was... it wasn't on purpose! Hehe..."},
+  {act:"Act IV",scene:"Scene 1",spk:["Officer"],tx:"Now that you're defeated, are you satisfied with this?"},
+  {act:"Act IV",scene:"Scene 1",spk:["Soldiers"],tx:"...No, sir."},
+  {act:"Act IV",scene:"Scene 1",spk:["Officer"],tx:"Stop mumbling, Louder!"},
+  {act:"Act IV",scene:"Scene 1",spk:["Soldiers"],tx:"NO, SIR!"},
+  {act:"Act IV",scene:"Scene 1",spk:["Officer"],tx:"Then shouldn't we take our revenge?"},
+  {act:"Act IV",scene:"Scene 1",spk:["English Soldier A"],tx:"Com... Commander, the French had a new brat with them. He came out of nowhere and burned our sacred flag!"},
+  {act:"Act IV",scene:"Scene 1",spk:["English Soldier B"],tx:"It's an ill omen, sir!"},
+  {act:"Act IV",scene:"Scene 1",spk:["Lackey"],tx:"Honestly, I kind of want to learn how he did that."},
+  {act:"Act IV",scene:"Scene 1",spk:["Officer"],tx:"Shut up! Joan and that pack of peasants are nothing but slaves to Satan! Why should we fear them? Remember how they humiliated us today? Today, they burned our flag. Tomorrow... we burn their Saint!"},
+  {act:"Act V",scene:"Scene 1",spk:["Narrator"],tx:"Against the odds, the French have secured a temporary victory. Grateful and curious about the \"miracle-working\" Tim, Joan, and her commanders invite him to join their victory feast. The camp is alive with energy as soldiers sing and enjoy a hard-earned meal."},
+  {act:"Act V",scene:"Scene 1",spk:["French Soldier"],tx:"Hey, brother! It seems that you're quite talented, huh!"},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"Uh, yeah! Thank God for empowering me...?"},
+  {act:"Act V",scene:"Scene 1",spk:["Joan"],tx:"I cannot find the words to express my gratitude. Your help in repelling the English was invaluable."},
+  {act:"Act V",scene:"Scene 1",spk:["Gilles"],tx:"Since Joan has spoken so highly of you, I shall overlook your earlier impudence... for now."},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"Come on, don't be so serious. Aren't we just rehearsing for the play?"},
+  {act:"Act V",scene:"Scene 1",spk:["Joan","Gilles"],tx:"Huh?"},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"...Huh?"},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"Wait! Are you serious? I actually traveled back in time?! So... that battle just now... that was real?"},
+  {act:"Act V",scene:"Scene 1",spk:["Gilles"],tx:"This is no place for your jokes—"},
+  {act:"Act V",scene:"Scene 1",spk:["Joan"],tx:"Forgive me, I have not properly introduced myself. I am Joan of Arc. I carry the will of God to aid the Dauphin and save France，what about you?"},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"I'm Tim. I'm from the 21th century and accidentally travel back here."},
+  {act:"Act V",scene:"Scene 1",spk:["Gilles"],tx:"And I am Gilles de Rais. If you ever dare to lift a finger against Joan, I will make you regret it."},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"Ha... ha... very funny."},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"So, can I ask... how did this all start?"},
+  {act:"Act V",scene:"Scene 1",spk:["Joan"],tx:"I was once a simple girl from the countryside. But one day, I heard the voices of the Saints."},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"The voices?"},
+  {act:"Act V",scene:"Scene 1",spk:["Joan"],tx:"They commanded me to help the Prince defeat the English and reclaim our land."},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"And then what happened?"},
+  {act:"Act V",scene:"Scene 1",spk:["Gilles"],tx:"Joan saved my life once. It is my greatest honor to follow her onto the field of battle. Under her command, we have won several victories. Her courage is known across the world—she is our hero, our Saint!"},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"She definitely is!"},
+  {act:"Act V",scene:"Scene 1",spk:["Gilles"],tx:"Yet those filthy English dogs... they dare to call her a witch!"},
+  {act:"Act V",scene:"Scene 1",spk:["Joan"],tx:"Enough. Let's talk about something other than this."},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"Check this out! Let me show you a dance from the future!"},
+  {act:"Act V",scene:"Scene 1",spk:["Soldier"],tx:"It's... It's bad! They're here!"},
+  {act:"Act V",scene:"Scene 1",spk:["Joan"],tx:"Be prepared for battle!"},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"What? The English again? Shouldn't they be too scared to come out?"},
+  {act:"Act V",scene:"Scene 1",spk:["Gilles"],tx:"They're like cockroaches—they'll never be dead. Keep your head on straight, kid."},
+  {act:"Act V",scene:"Scene 1",spk:["Officer"],tx:"Joan, I didn't expect you to be so... relaxed."},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"Oh, look! It's Mr. Grumpy-Pants!"},
+  {act:"Act V",scene:"Scene 1",spk:["Officer"],tx:"Perfect. Our new friend is here too. Taking both of you at once sounds like a plan."},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"Catch us if you can!"},
+  {act:"Act V",scene:"Scene 1",spk:["Lackey"],tx:"Aah! Help me, Joan!"},
+  {act:"Act V",scene:"Scene 1",spk:["Joan"],tx:"What's wrong ? Aaaaaaaaaa~"},
+  {act:"Act V",scene:"Scene 1",spk:["Officer"],tx:"STOP! Don't worry... my only target is Joan."},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"You won't get away with this!"},
+  {act:"Act V",scene:"Scene 1",spk:["Officer"],tx:"Boy, do you want to die too?"},
+  {act:"Act V",scene:"Scene 1",spk:["Joan"],tx:"Tim, let go! Save yourself!"},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"No! Joan! If you go, they'll burn you as a witch!"},
+  {act:"Act V",scene:"Scene 1",spk:["Joan"],tx:"Follow God's guidance! Do not lose hope!"},
+  {act:"Act V",scene:"Scene 1",spk:["Tim"],tx:"JOAN!"},
+  {act:"Act VI",scene:"Scene 1",spk:["Gilles"],tx:"Damn it! It's because of your fooling around that she was captured! We shouldn't have trusted a stranger like you!"},
+  {act:"Act VI",scene:"Scene 1",spk:["Tim"],tx:"Shut up! Mere blaming won't save her. You should consider how to rescue her."},
+  {act:"Act VI",scene:"Scene 1",spk:["Gilles"],tx:"Hmph! If I had any other choice, I wouldn't listen to every single word you say. But fine... what's your \"plan\"?"},
+  {act:"Act VI",scene:"Scene 1",spk:["Tim"],tx:"Hang on, let me ask ChatGPT... wait, there's no Wi-Fi in the 15th century!"},
+  {act:"Act VI",scene:"Scene 1",spk:["Gilles"],tx:"First, we need to know where she is and when her trial or execution will be. You claim to be from the future—tell me!"},
+  {act:"Act VI",scene:"Scene 1",spk:["Tim"],tx:"Hmmm... the history has it that… it should be tomorrow morning... at Rouen Plaza!"},
+  {act:"Act VI",scene:"Scene 1",spk:["Gilles"],tx:"Fine. We need a distraction. That strange \"magic cuboid\" of yours—what else can it do?"},
+  {act:"Act VI",scene:"Scene 1",spk:["Gilles"],tx:"What the hell is that?!"},
+  {act:"Act VI",scene:"Scene 1",spk:["Tim"],tx:"You mean this?...I have an idea!"},
+  {act:"Act VII",scene:"Scene 1",spk:["Tim"],tx:"Hey, who's that being executed? Is she famous?"},
+  {act:"Act VII",scene:"Scene 1",spk:["Bystander"],tx:"Ain't you know? She's an envoy sent by Satan to help the French. The English armed force capture her to stop the demon from killing us all."},
+  {act:"Act VII",scene:"Scene 1",spk:["Tim"],tx:"Oh... hey."},
+  {act:"Act VII",scene:"Scene 1",spk:["Bystander"],tx:"What?"},
+  {act:"Act VII",scene:"Scene 1",spk:["Tim"],tx:"Do you believe in \"The Light\"?"},
+  {act:"Act VII",scene:"Scene 1",spk:["Bystander"],tx:"Huh? What are you talking about—"},
+  {act:"Act VII",scene:"Scene 1",spk:["Tim"],tx:"WHO'S YOUR DADDY!"},
+  {act:"Act VII",scene:"Scene 1",spk:["Bystander"],tx:"AAAAAHHHH!"},
+  {act:"Act VII",scene:"Scene 1",spk:["Tim"],tx:"Sorry, buddy, but I need your clothes."},
+  {act:"Act VII",scene:"Scene 1",spk:["Officer"],tx:"Burn the witch!"},
+  {act:"Act VII",scene:"Scene 1",spk:["Crowd"],tx:"Burn the witch!"},
+  {act:"Act VII",scene:"Scene 1",spk:["Joan"],tx:"I have sworn my loyalty to the son. I will keep my vow."},
+  {act:"Act VII",scene:"Scene 1",spk:["Officer"],tx:"Execute her!"},
+  {act:"Act VII",scene:"Scene 1",spk:["Gilles"],tx:"STOP! I am Gilles de Rais, and I am here to rescue the Saint!"},
+  {act:"Act VII",scene:"Scene 1",spk:["Officer"],tx:"You again? Why are you here? How dare you?"},
+  {act:"Act VII",scene:"Scene 1",spk:["Gilles"],tx:"Joan is the envoy of God! You will face His wrath!"},
+  {act:"Act VII",scene:"Scene 1",spk:["Officer"],tx:"MY EYES! I CAN'T SEE! WHAT SORCERY IS THIS?"},
+  {act:"Act VII",scene:"Scene 1",spk:["Gilles"],tx:"Well… God has come to punish you."},
+  {act:"Act VII",scene:"Scene 1",spk:["Lackey"],tx:"Wow, is God taking apprentices? I can host another \"Last Supper\" if He wants!"},
+  {act:"Act VII",scene:"Scene 1",spk:["Officer"],tx:"YOU IDIOT! CAPTURE THEM!"},
+  {act:"Act VII",scene:"Scene 1",spk:["Tim"],tx:"Joan, I'm here!"},
+  {act:"Act VII",scene:"Scene 1",spk:["Officer"],tx:"If I can't burn her, I'll burn YOU!"},
+  {act:"Act VII",scene:"Scene 1",spk:["Tim"],tx:"Whoa, buddy! Chill out!"},
+  {act:"Act VIII",scene:"Scene 1",spk:["Narrator"],tx:"All of a sudden, Tim traveled to the previous museum. When he opened his eyes again, he found himself back in the museum hall."},
+  {act:"Act VIII",scene:"Scene 1",spk:["Student A"],tx:"Tim! Why did you stop? Keep up!"},
+  {act:"Act VIII",scene:"Scene 1",spk:["Tim"],tx:"How... how long was I gone?"},
+  {act:"Act VIII",scene:"Scene 1",spk:["Student B"],tx:"About… three minutes? We realized you weren't behind us, so we came back to find you."},
+  {act:"Act VIII",scene:"Scene 1",spk:["Teacher"],tx:"Tim! You scared me half to death! Don't wander off! And why is this display open?"},
+  {act:"Act VIII",scene:"Scene 1",spk:["Tim"],tx:"Ms... where did this book come from?"},
+  {act:"Act VIII",scene:"Scene 1",spk:["Teacher"],tx:"This? The legend has it that it was written by Joan's companion, Gilles. It's a personal diary."},
+  {act:"Act VIII",scene:"Scene 1",spk:["Tim"],tx:"The text... it changed!"},
+  {act:"Act VIII",scene:"Scene 1",spk:["Student A"],tx:"What are you talking about?"},
+  {act:"Act VIII",scene:"Scene 1",spk:["Tim"],tx:"It says, \"Thank you, the envoy from God. Your arrival changed everything.\" Wasn't this supposed to be a \"Cursed Book\" that was smelly and warned people to stay away?"},
+  {act:"Act VIII",scene:"Scene 1",spk:["Student B"],tx:"Were you dreaming? Why would the \"Kind Gilles\" write a cursed book?"},
+  {act:"Act VIII",scene:"Scene 1",spk:["Teacher"],tx:"Exactly. After Saint Joan defeated the English for the King, she retired to the countryside and lived as a nun until she passed away peacefully of old age."},
+  {act:"Act VIII",scene:"Scene 1",spk:["Tim"],tx:"It worked... I actually did it!"},
+  {act:"Act VIII",scene:"Scene 1",spk:["Student A"],tx:"What are you grinning about? Weirdo..."},
+  {act:"Act VIII",scene:"Scene 1",spk:["Narrator"],tx:"History is not only written by heroes, but also by the people who choose to help them."},
+];
+RAW.forEach((l,i)=>l.i=i);
+const ALL_SPK=[...new Set(RAW.flatMap(l=>l.spk))].sort();
+const ACTS=[...new Set(RAW.map(l=>l.act))];
+
+const LS={
+  get(k,d){try{const v=localStorage.getItem('edcg_'+k);return v?JSON.parse(v):d;}catch{return d;}},
+  set(k,v){localStorage.setItem('edcg_'+k,JSON.stringify(v));}
+};
+
+let st={
+  screen:'home', roleMode:'all', myRoles:[], ansMode:'mc', acts:[...ACTS], qCount:'all',
+  queue:[], idx:0, selSpk:[], spkDone:0, spkOk:0, lineDone:0, lineOk:0, opts:[], input:'',
+  ss:0, ls:0, total:0, nick:LS.get('nick',''), hl:[],
+  unlocked:LS.get('unlocked',false),
+  mistSpk:[], mistLine:[],
+  lbUnsub:null,
+  t0:0, timeMs:0,
+  correctLineTarget:'',
+};
+
+function norm(s){return (s||'').toLowerCase().replace(/[^\w\s]/g,'').replace(/\s+/g,' ').trim();}
+function lev(a,b){const m=a.length,n=b.length,dp=Array.from({length:m+1},()=>Array(n+1).fill(0));for(let i=0;i<=m;i++)dp[i][0]=i;for(let j=0;j<=n;j++)dp[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);return dp[m][n];}
+function close(a,b){a=norm(a);b=norm(b);if(a===b)return 1;if(a.length<3)return 0;return lev(a,b)<=Math.max(2,Math.floor(Math.max(a.length,b.length)*.15));}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function toast(m){const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),2000);}
+function fmtTime(ms){const s=Math.round(ms/1000);const m=Math.floor(s/60);const r=s%60;return m>0?`${m}:${String(r).padStart(2,'0')}`:`${r}s`;}
+
+function buildQ(){
+  const lines=RAW.filter(l=>st.acts.includes(l.act));
+  const pairs=[];
+  for(let i=0;i<lines.length-1;i++){
+    const p=lines[i],n=lines[i+1];
+    if(n.i!==p.i+1)continue;
+    if(st.roleMode==='mine'&&!n.spk.some(s=>st.myRoles.includes(s)))continue;
+    pairs.push({p,n});
+  }
+  let q=shuffle(pairs);
+  if(st.qCount!=='all')q=q.slice(0,+st.qCount);
+  return q;
+}
+function mcOpts(c){
+  const o=RAW.map(l=>l.tx).filter(t=>t!==c);
+  const s=o.map(t=>({t,s:Math.abs(t.length-c.length)+Math.random()*20})).sort((a,b)=>a.s-b.s);
+  return shuffle([c,...s.slice(0,3).map(x=>x.t)]);
+}
+
+/* 單字級拼寫建議：只對「目前正在打的那個字」提示，不給整句 */
+function wordSuggestions(input, correctText){
+  const dict=[...new Set((correctText.match(/[A-Za-z']+/g)||[]).map(w=>w))];
+  if(!dict.length)return [];
+  // 取最後一個「未完成單字」
+  const m=input.match(/([A-Za-z']+)$/);
+  if(!m)return [];
+  const cur=m[1];
+  if(cur.length<2)return [];
+  const cl=cur.toLowerCase();
+  const hits=[];
+  for(const w of dict){
+    const wl=w.toLowerCase();
+    if(wl===cl)continue;
+    if(wl.startsWith(cl)||cl.startsWith(wl.slice(0,3))){
+      hits.push({w,score:0});
+      continue;
+    }
+    const d=lev(cl,wl);
+    if(d<=Math.max(1,Math.floor(wl.length*0.35))&&d>0)hits.push({w,score:d});
+  }
+  hits.sort((a,b)=>a.score-b.score);
+  const uniq=[];
+  for(const h of hits){if(!uniq.includes(h.w))uniq.push(h.w);if(uniq.length>=4)break;}
+  return uniq;
+}
+function applyWordSuggestion(input, suggestion){
+  return input.replace(/[A-Za-z']+$/, suggestion);
+}
+
+async function loadMistakes(){
+  if(!st.nick)return;
+  try{
+    const snap=await getDoc(doc(db,'mistakes',st.nick));
+    if(snap.exists()){const d=snap.data();st.mistSpk=d.spk||[];st.mistLine=d.line||[];}
+  }catch(e){console.warn(e);}
+}
+async function saveMistakes(){
+  if(!st.nick)return;
+  try{await setDoc(doc(db,'mistakes',st.nick),{spk:st.mistSpk,line:st.mistLine,updated:new Date().toISOString()},{merge:true});}
+  catch(e){console.warn(e);}
+}
+function recMist(type,prev,correct){
+  const list=type==='spk'?st.mistSpk:st.mistLine;
+  const id=prev.i+'|'+(type==='spk'?correct.join(','):correct);
+  const ex=list.find(m=>m.id===id);
+  if(ex)ex.c++;else list.push({id,ps:prev.spk,pt:prev.tx,c:1,ok:correct});
+  list.sort((a,b)=>b.c-a.c);
+  saveMistakes();
+}
+
+/** 只有 全角色 + (50題或全部) 才上傳排行榜 */
+function canRank(){
+  return st.roleMode==='all' && (st.qCount===50 || st.qCount==='all');
+}
+async function saveScore(){
+  if(!st.nick||!st.unlocked||!canRank())return;
+  const mode=st.ansMode==='mc'?'all_mc':'all_input';
+  // 正確數：角色題 + 台詞題（全角色每題各 1；台詞也 1）
+  // 為公平：以「題目數」為分母，每題角色+台詞各算，正確率 = (ss+ls)/(totalQ*2) 若有角色題
+  // 簡化：正確率以「台詞正確 + 角色正確」/「實際作答小題數」
+  const answeredUnits=st.total + st.queue.length; // 角色小題數約 total，台詞約 queue.length；mine 模式跳過角色但此處不會上榜
+  const correctUnits=st.ss+st.ls;
+  const accuracy=answeredUnits>0?correctUnits/answeredUnits:0;
+  const entry={
+    name:st.nick,
+    spk:st.ss,
+    line:st.ls,
+    correct:correctUnits,
+    total:answeredUnits,
+    accuracy:Math.round(accuracy*10000)/10000,
+    timeMs:st.timeMs,
+    qCount:st.qCount,
+    date:new Date().toISOString()
+  };
+  const ref=doc(db,'leaderboard',mode,'scores',st.nick);
+  try{
+    const old=await getDoc(ref);
+    if(old.exists()){
+      const o=old.data();
+      // 保留較佳紀錄：正確率較高；同正確率則時間較短
+      if(o.accuracy>entry.accuracy)return;
+      if(o.accuracy===entry.accuracy && (o.timeMs||1e15)<=entry.timeMs)return;
+    }
+    await setDoc(ref,entry);
+  }catch(e){console.warn(e);toast('排行榜上傳失敗');}
+}
+
+function askPwd(cb){
+  if(st.unlocked){cb();return;}
+  const overlay=document.createElement('div');
+  overlay.className='gate';
+  overlay.innerHTML=`<div class="gate-box">
+    <div style="font-size:1.8rem;margin-bottom:8px">🔒</div>
+    <h2>班級密碼</h2>
+    <input type="password" id="pwdIn" placeholder="輸入密碼" style="margin:14px 0;text-align:center">
+    <button class="btn btn-primary" id="pwdGo">確認</button>
+    <button class="btn btn-sec" id="pwdCancel" style="margin-top:8px">取消</button>
+  </div>`;
+  document.body.appendChild(overlay);
+  const inp=document.getElementById('pwdIn');inp.focus();
+  const done=ok=>{overlay.remove();if(ok){st.unlocked=true;LS.set('unlocked',true);cb();}};
+  document.getElementById('pwdGo').onclick=()=>{if(inp.value===CLASS_PWD)done(1);else toast('密碼錯誤');};
+  document.getElementById('pwdCancel').onclick=()=>done(0);
+  inp.onkeydown=e=>{if(e.key==='Enter')document.getElementById('pwdGo').click();};
+}
+
+const appEl=document.getElementById('app');
+const nav=document.getElementById('nav');
+function go(s){
+  if(s==='leaderboard'&&!st.unlocked){
+    askPwd(()=>{st.screen=s;document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));render();window.scrollTo(0,0);});
+    return;
+  }
+  st.screen=s;
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));
+  render();window.scrollTo(0,0);
+}
+nav.onclick=e=>{const b=e.target.closest('button');if(b)go(b.dataset.s);};
+
+function render(){
+  if(!st.nick){rNick();return;}
+  ({home:rHome,practice:rSetup,quiz:rQuiz,result:rResult,mistakes:rMist,leaderboard:rLB,script:rScript})[st.screen]?.();
+}
+
+function rNick(){
+  appEl.innerHTML=`<div class="gate"><div class="gate-box">
+    <div style="font-size:2.2rem;margin-bottom:8px">🎭</div>
+    <h2>設定暱稱</h2>
+    <p class="muted" style="margin:8px 0 14px">排行榜與錯題本綁定此名稱</p>
+    <input type="text" id="nickIn" placeholder="暱稱" maxlength="16" style="margin-bottom:14px;text-align:center">
+    <button class="btn btn-primary" id="nickGo">開始</button>
+  </div></div>`;
+  const inp=document.getElementById('nickIn');inp.focus();
+  document.getElementById('nickGo').onclick=async()=>{
+    const v=inp.value.trim();if(!v){toast('請輸入暱稱');return;}
+    st.nick=v;LS.set('nick',v);await loadMistakes();render();
+  };
+  inp.onkeydown=e=>{if(e.key==='Enter')document.getElementById('nickGo').click();};
+}
+
+function rHome(){
+  appEl.innerHTML=`
+    <h1>🎭 台詞接龍</h1>
+    <p class="muted" style="margin-bottom:18px">${st.nick} · ${RAW.length} 句</p>
+    <div class="btn-group">
+      <button class="btn btn-primary" id="b1">🎯 開始練習</button>
+      <button class="btn btn-sec" id="b2">📖 劇本</button>
+      <button class="btn btn-sec" id="b3">📕 錯題</button>
+      <button class="btn btn-sec" id="b4">🏆 排行</button>
+    </div>
+    <button class="btn btn-sm btn-outline" id="bNick" style="margin-top:14px">✏️ ${st.nick}</button>
+    <p class="note">排行榜僅計：全角色 · 50題/全部 · 依正確率再比時間</p>`;
+  document.getElementById('b1').onclick=()=>go('practice');
+  document.getElementById('b2').onclick=()=>go('script');
+  document.getElementById('b3').onclick=()=>go('mistakes');
+  document.getElementById('b4').onclick=()=>go('leaderboard');
+  document.getElementById('bNick').onclick=()=>{st.nick='';LS.set('nick','');st.mistSpk=[];st.mistLine=[];render();};
+}
+
+function rSetup(){
+  const actChk=ACTS.map(a=>`<label class="chk"><input type="checkbox" value="${a}" ${st.acts.includes(a)?'checked':''} class="acb"> ${a}</label>`).join('');
+  const roleChk=ALL_SPK.map(r=>`<label class="chk"><input type="checkbox" value="${r}" ${st.myRoles.includes(r)?'checked':''} class="rcb"> ${r}</label>`).join('');
+  appEl.innerHTML=`
+    <h2>設定</h2>
+    <div class="card"><h3>👤 範圍</h3>
+      <div class="rad-g">
+        <label class="rad ${st.roleMode==='mine'?'on':''}"><input type="radio" name="rm" value="mine" ${st.roleMode==='mine'?'checked':''}> 我的角色</label>
+        <label class="rad ${st.roleMode==='all'?'on':''}"><input type="radio" name="rm" value="all" ${st.roleMode==='all'?'checked':''}> 全角色 <span class="muted">（可上榜）</span></label>
+      </div>
+      <div id="myBox" class="${st.roleMode==='mine'?'':'hidden'}" style="margin-top:10px"><div class="chk-g" style="max-height:160px;overflow-y:auto">${roleChk}</div></div>
+    </div>
+    <div class="card"><h3>✍️ 模式</h3>
+      <div class="rad-g">
+        <label class="rad ${st.ansMode==='mc'?'on':''}"><input type="radio" name="am" value="mc" ${st.ansMode==='mc'?'checked':''}> 四選一</label>
+        <label class="rad ${st.ansMode==='input'?'on':''}"><input type="radio" name="am" value="input" ${st.ansMode==='input'?'checked':''}> 整句輸入</label>
+      </div>
+    </div>
+    <div class="card"><h3>🔢 題數</h3>
+      <div class="seg">${[10,25,50,'all'].map(n=>`<button class="btn btn-outline ${st.qCount==n?'sel':''}" data-q="${n}">${n==='all'?'全部':n}${n===50||n==='all'?' ★':''}</button>`).join('')}</div>
+      <p class="note">★ 全角色 + 50/全部 才計入排行榜</p>
+    </div>
+    <div class="card"><h3>📑 Act</h3><div class="chk-g">${actChk}</div></div>
+    <button class="btn btn-primary" id="go">🚀 開始</button>
+    <button class="btn btn-sec" id="back" style="margin-top:8px">←</button>`;
+  document.querySelectorAll('input[name=rm]').forEach(r=>r.onchange=()=>{st.roleMode=r.value;document.getElementById('myBox').classList.toggle('hidden',r.value!=='mine');document.querySelectorAll('.rad').forEach(el=>{if(el.querySelector('input[name=rm]'))el.classList.toggle('on',el.querySelector('input').checked);});});
+  document.querySelectorAll('input[name=am]').forEach(r=>r.onchange=()=>{st.ansMode=r.value;document.querySelectorAll('.rad').forEach(el=>{if(el.querySelector('input[name=am]'))el.classList.toggle('on',el.querySelector('input').checked);});});
+  document.querySelectorAll('.rcb').forEach(c=>c.onchange=()=>{st.myRoles=[...document.querySelectorAll('.rcb:checked')].map(x=>x.value);});
+  document.querySelectorAll('.acb').forEach(c=>c.onchange=()=>{st.acts=[...document.querySelectorAll('.acb:checked')].map(x=>x.value);});
+  document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{st.qCount=b.dataset.q==='all'?'all':+b.dataset.q;document.querySelectorAll('[data-q]').forEach(x=>x.classList.toggle('sel',x.dataset.q==b.dataset.q));});
+  document.getElementById('back').onclick=()=>go('home');
+  document.getElementById('go').onclick=()=>{
+    if(!st.acts.length){toast('選至少一個 Act');return;}
+    if(st.roleMode==='mine'&&!st.myRoles.length){toast('勾選你的角色');return;}
+    st.queue=buildQ();
+    if(!st.queue.length){toast('沒有題目');return;}
+    st.idx=0;st.ss=0;st.ls=0;st.total=0;st.t0=Date.now();st.timeMs=0;
+    startQ();
+  };
+}
+
+function startQ(){
+  st.selSpk=[];st.spkDone=0;st.spkOk=0;st.lineDone=0;st.lineOk=0;st.input='';
+  st.correctLineTarget=st.queue[st.idx].n.tx;
+  if(st.ansMode==='mc')st.opts=mcOpts(st.correctLineTarget);
+  if(st.roleMode==='mine'){st.spkDone=1;st.spkOk=1;st.ss++;st.total++;}
+  st.screen='quiz';render();
+}
+
+function rQuiz(){
+  const q=st.queue[st.idx];if(!q){go('result');return;}
+  const {p,n}=q;const pct=(st.idx/st.queue.length)*100;
+  let spkH='',lineH='';
+  if(st.roleMode==='all'&&!st.spkDone){
+    spkH=`<div class="card"><h3>👤 下一句是誰？</h3><div class="btn-grid">${ALL_SPK.map(s=>`<button class="btn btn-outline role-btn ${st.selSpk.includes(s)?'sel':''}" data-r="${s}">${s}</button>`).join('')}</div>
+      <button class="btn btn-primary" id="subSpk" style="margin-top:12px">✓</button></div>`;
+  }else if(st.roleMode==='all'&&st.spkDone){
+    spkH=`<div class="box ${st.spkOk?'ok':'ng'}">${st.spkOk?'✅':'❌'} ${n.spk.join(' & ')}</div>`;
+  }
+  if(st.spkDone&&!st.lineDone){
+    if(st.ansMode==='mc')lineH=`<div class="card"><h3>💬 下一句？</h3><div style="display:flex;flex-direction:column;gap:8px">${st.opts.map((t,i)=>`<div class="opt" data-i="${i}">${t}</div>`).join('')}</div></div>`;
+    else lineH=`<div class="card"><h3>💬 下一句？</h3>
+      <div class="rel"><input type="text" id="lin" placeholder="逐字輸入…" autocomplete="off" value="${st.input.replace(/"/g,'&quot;')}">
+      <div class="ac hidden" id="ac"></div></div>
+      <p class="note">僅提示可能拼錯的單字，不會給整句</p>
+      <button class="btn btn-primary" id="subL" style="margin-top:10px">✓</button></div>`;
+  }else if(st.lineDone){
+    lineH=`<div class="box ${st.lineOk?'ok':'ng'}">${st.lineOk?'✅':'❌'} <em>${n.tx}</em></div><button class="btn btn-primary" id="next">→</button>`;
+  }
+  appEl.innerHTML=`<div class="bar"><div class="chip">${st.idx+1}/${st.queue.length}</div><div class="chip">👤 <b>${st.ss}</b></div><div class="chip">💬 <b>${st.ls}</b></div></div>
+    <div class="prog"><div style="width:${pct}%"></div></div>
+    <div class="prev"><div class="spk">${p.spk.join(' & ')}</div><div class="tx">${p.tx}</div></div>${spkH}${lineH}`;
+
+  if(st.roleMode==='all'&&!st.spkDone){
+    document.querySelectorAll('.role-btn').forEach(b=>b.onclick=()=>{const r=b.dataset.r;st.selSpk=st.selSpk.includes(r)?st.selSpk.filter(x=>x!==r):[...st.selSpk,r];render();});
+    document.getElementById('subSpk').onclick=()=>{
+      const ok=n.spk.length===st.selSpk.length&&n.spk.every(s=>st.selSpk.includes(s));
+      st.spkOk=ok;st.spkDone=1;if(ok)st.ss++;else recMist('spk',p,n.spk);st.total++;render();
+    };
+  }
+  if(st.spkDone&&!st.lineDone&&st.ansMode==='mc'){
+    document.querySelectorAll('.opt').forEach(c=>c.onclick=()=>{
+      const chosen=st.opts[+c.dataset.i];st.lineOk=chosen===n.tx;st.lineDone=1;
+      if(st.lineOk)st.ls++;else recMist('line',p,n.tx);
+      document.querySelectorAll('.opt').forEach((x,i)=>{if(st.opts[i]===n.tx)x.classList.add('ok');else if(i===+c.dataset.i)x.classList.add('ng');});
+      setTimeout(()=>render(),500);
+    });
+  }
+  if(st.spkDone&&!st.lineDone&&st.ansMode==='input'){
+    const inp=document.getElementById('lin'),ac=document.getElementById('ac');inp.focus();
+    const showSug=()=>{
+      st.input=inp.value;
+      const sug=wordSuggestions(inp.value,st.correctLineTarget);
+      if(sug.length){
+        ac.innerHTML=sug.map(w=>`<div data-w="${w}">${w}</div>`).join('');
+        ac.classList.remove('hidden');
+        ac.querySelectorAll('div').forEach(d=>d.onclick=()=>{
+          inp.value=applyWordSuggestion(inp.value,d.dataset.w);
+          st.input=inp.value;ac.classList.add('hidden');inp.focus();
+        });
+      }else ac.classList.add('hidden');
+    };
+    inp.oninput=showSug;
+    document.getElementById('subL').onclick=()=>{
+      const v=inp.value.trim();if(!v){toast('請輸入');return;}
+      if(close(v,n.tx)){
+        st.lineOk=1;st.lineDone=1;st.ls++;render();
+      }else{st.lineOk=0;st.lineDone=1;recMist('line',p,n.tx);render();}
+    };
+    inp.onkeydown=e=>{if(e.key==='Enter')document.getElementById('subL').click();};
+  }
+  if(st.lineDone)document.getElementById('next').onclick=()=>{
+    st.idx++;
+    if(st.idx>=st.queue.length){
+      st.timeMs=Date.now()-st.t0;
+      const finish=()=>{saveScore().finally(()=>go('result'));};
+      if(canRank()){
+        if(st.unlocked)finish();
+        else askPwd(finish);
+      }else go('result');
+    }else startQ();
+  };
+}
+
+function rResult(){
+  const units=st.total+st.queue.length;
+  const correct=st.ss+st.ls;
+  const acc=units?Math.round(correct/units*100):0;
+  const ranked=canRank();
+  appEl.innerHTML=`<h2>完成</h2>
+    <div class="card" style="text-align:center">
+      <div style="display:flex;justify-content:center;gap:24px;margin:12px 0;flex-wrap:wrap">
+        <div><div style="font-size:1.8rem;font-weight:700;color:var(--hl)">${acc}%</div><div class="muted">${correct}/${units}</div></div>
+        <div><div style="font-size:1.8rem;font-weight:700;color:var(--hl)">${fmtTime(st.timeMs)}</div><div class="muted">⏱</div></div>
+      </div>
+      <p class="muted">${st.queue.length} 題 · ${st.roleMode==='mine'?'我的角色':'全角色'} · ${st.ansMode==='mc'?'四選一':'整句'}</p>
+      <p class="note">${ranked?(st.unlocked?'已嘗試上傳排行榜':'需密碼才上傳排行榜'):'此組合不計入排行榜'}</p>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" id="a1">再練</button>
+      <button class="btn btn-sec" id="a2">🏠</button>
+      <button class="btn btn-sec" id="a3">📕</button>
+    </div>`;
+  document.getElementById('a1').onclick=()=>go('practice');
+  document.getElementById('a2').onclick=()=>go('home');
+  document.getElementById('a3').onclick=()=>go('mistakes');
+}
+
+function rMist(){
+  appEl.innerHTML=`<h2>📕 錯題</h2>
+    <div class="tabs">
+      <button class="tab on" data-t="spk">👤 ${st.mistSpk.length}</button>
+      <button class="tab" data-t="line">💬 ${st.mistLine.length}</button>
+    </div><div id="ml"></div>`;
+  const ml=document.getElementById('ml');
+  function show(t){
+    document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
+    const d=t==='spk'?st.mistSpk:st.mistLine;
+    if(!d.length){ml.innerHTML='<div class="empty">🎉</div>';return;}
+    ml.innerHTML=d.map(m=>`<div class="mist"><div class="badge">${m.c}</div><div style="flex:1">
+      <div class="muted" style="font-size:.78rem;margin-bottom:3px">${m.ps.join(' & ')} — ${m.pt.slice(0,50)}${m.pt.length>50?'…':''}</div>
+      <div><b>${Array.isArray(m.ok)?m.ok.join(' & '):m.ok}</b></div></div></div>`).join('');
+  }
+  show('spk');
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>show(t.dataset.t));
+}
+
+function rLB(){
+  const modes=[{k:'all_mc',l:'四選一'},{k:'all_input',l:'整句輸入'}];
+  appEl.innerHTML=`<h2>🏆 排行<span class="spin" id="lbSpin"></span></h2>
+    <p class="note" style="margin-bottom:10px">全角色 · 50/全部 · 正確率 → 時間</p>
+    <div class="tabs" id="lt">${modes.map((m,i)=>`<button class="tab ${i===0?'on':''}" data-k="${m.k}">${m.l}</button>`).join('')}</div>
+    <div id="ll"><div class="empty">載入中…</div></div>`;
+  let cur='all_mc';
+  function listen(mode){
+    if(st.lbUnsub)st.lbUnsub();
+    // 客戶端排序：Firestore 難同時 orderBy accuracy + timeMs，改抓下來排序
+    const qy=query(collection(db,'leaderboard',mode,'scores'),limit(80));
+    st.lbUnsub=onSnapshot(qy,snap=>{
+      document.getElementById('lbSpin')?.remove();
+      let list=[];snap.forEach(d=>list.push(d.data()));
+      list.sort((a,b)=>{
+        const aa=a.accuracy||0,bb=b.accuracy||0;
+        if(bb!==aa)return bb-aa;
+        return (a.timeMs||1e15)-(b.timeMs||1e15);
+      });
+      list=list.slice(0,50);
+      const ll=document.getElementById('ll');
+      if(!list.length){ll.innerHTML='<div class="empty">—</div>';return;}
+      ll.innerHTML=list.map((e,i)=>{
+        const acc=Math.round((e.accuracy||0)*100);
+        const frac=`${e.correct||0}/${e.total||0}`;
+        return `<div class="lb-item">
+          <div class="rank ${i===0?'g':i===1?'s':i===2?'b':''}">${i+1}</div>
+          <div style="flex:1">
+            <b>${e.name}</b>
+            <div class="muted" style="font-size:.75rem">${acc}% · ${frac} · ⏱ ${fmtTime(e.timeMs||0)}</div>
+          </div>
+          <b style="color:var(--hl)">${acc}%</b>
+        </div>`;
+      }).join('');
+    },err=>{toast('排行榜載入失敗');console.warn(err);});
+  }
+  listen(cur);
+  document.querySelectorAll('#lt .tab').forEach(t=>t.onclick=()=>{
+    document.querySelectorAll('#lt .tab').forEach(x=>x.classList.toggle('on',x===t));
+    cur=t.dataset.k;listen(cur);
+  });
+}
+
+function rScript(){
+  const chk=ALL_SPK.map(r=>`<label class="chk" style="padding:5px 8px"><input type="checkbox" value="${r}" ${st.hl.includes(r)?'checked':''} class="hlc"> ${r}</label>`).join('');
+  let h=`<h2>📖 劇本</h2><div class="card"><div class="chk-g" style="max-height:120px;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:3px">${chk}</div></div>`;
+  let curAct='';
+  RAW.forEach(l=>{
+    if(l.act!==curAct){curAct=l.act;h+=`<div class="act-h">${l.act} · ${l.scene}</div>`;}
+    const hl=l.spk.some(s=>st.hl.includes(s));
+    h+=`<div class="sline ${hl?'hl':''}"><span class="spk">${l.spk.join(' & ')}</span><br>${l.tx}</div>`;
+  });
+  appEl.innerHTML=h;
+  document.querySelectorAll('.hlc').forEach(c=>c.onchange=()=>{st.hl=[...document.querySelectorAll('.hlc:checked')].map(x=>x.value);render();});
+}
+
+if(st.nick)loadMistakes().then(()=>render());else render();
+  </script>
+</body>
+</html>
