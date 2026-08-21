@@ -3,7 +3,7 @@
 幫助大家練習「聽到上一句 → 立刻知道下一句是誰、講什麼」。  
 支援手機與電腦，成績與錯題可雲端同步。
 
-網站：https://lucas981020.github.io/English-Drama-Chain-Game/
+網站：[https://lucas981020.github.io/English-Drama-Chain-Game/](https://lucas981020.github.io/English-Drama-Chain-Game/)
 
 ---
 
