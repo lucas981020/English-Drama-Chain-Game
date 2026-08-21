@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>英語話劇台詞接龍練習器 | English Drama Chain Game</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --card2: #243044;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --highlight: #fbbf24;
+      --radius: 12px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px;
+      padding-bottom: 80px;
+    }
+    h1, h2, h3 { font-weight: 700; }
+    h1 { font-size: 1.5rem; margin-bottom: 8px; }
+    h2 { font-size: 1.25rem; margin-bottom: 12px; }
+    h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      width: 100%;
+      min-height: 48px;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover, .btn-primary:focus { background: var(--primary-hover); }
+    .btn-secondary { background: var(--card2); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: #2d3a4f; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline.active {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+    }
+    .btn-sm { padding: 10px 14px; font-size: 0.9rem; min-height: 40px; }
+    .btn-group { display: flex; flex-direction: column; gap: 10px; }
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 480px) {
+      .btn-grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+    .role-btn {
+      padding: 12px 10px;
+      font-size: 0.85rem;
+      text-align: center;
+      word-break: break-word;
+    }
+    .role-btn.selected {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
+    }
+    .role-btn.correct {
+      border-color: var(--success);
+      background: rgba(34, 197, 94, 0.2);
+      color: #86efac;
+    }
+    .role-btn.wrong {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+    }
+    .option-card {
+      background: var(--card2);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+    .option-card:hover { border-color: var(--primary); }
+    .option-card.selected { border-color: var(--primary); background: rgba(59,130,246,0.15); }
+    .option-card.correct { border-color: var(--success); background: rgba(34,197,94,0.15); }
+    .option-card.wrong { border-color: var(--danger); background: rgba(239,68,68,0.15); }
+    .prev-line {
+      background: var(--card2);
+      border-left: 4px solid var(--primary);
+      padding: 16px;
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 20px;
+    }
+    .prev-line .speaker { color: var(--primary); font-weight: 700; margin-bottom: 4px; }
+    .prev-line .text { font-size: 1.05rem; }
+    .score-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+    }
+    .score-item { background: var(--card2); padding: 6px 12px; border-radius: 20px; }
+    .score-item strong { color: var(--highlight); }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: var(--card2);
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+    }
+    input[type="text"]:focus, textarea:focus { border-color: var(--primary); }
+    .checkbox-group { display: flex; flex-direction: column; gap: 8px; }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--card2);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .checkbox-item input { width: 20px; height: 20px; accent-color: var(--primary); }
+    .radio-group { display: flex; flex-direction: column; gap: 8px; }
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--card2);
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .radio-item.selected { border-color: var(--primary); background: rgba(59,130,246,0.1); }
+    .radio-item input { width: 18px; height: 18px; accent-color: var(--primary); }
+    .hidden { display: none !important; }
+    .result-box {
+      padding: 16px;
+      border-radius: 10px;
+      margin: 16px 0;
+      text-align: center;
+    }
+    .result-box.correct { background: rgba(34,197,94,0.15); border: 1px solid var(--success); }
+    .result-box.wrong { background: rgba(239,68,68,0.15); border: 1px solid var(--danger); }
+    .result-box.partial { background: rgba(245,158,11,0.15); border: 1px solid var(--warning); }
+    .script-line {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+    .script-line.highlight {
+      background: rgba(251, 191, 36, 0.15);
+      border-left: 3px solid var(--highlight);
+    }
+    .script-line .spk { color: var(--primary); font-weight: 600; }
+    .act-header {
+      background: var(--card2);
+      padding: 12px 16px;
+      font-weight: 700;
+      margin-top: 16px;
+      border-radius: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tab {
+      padding: 10px 16px;
+      background: var(--card2);
+      border: none;
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 0.9rem;
+    }
+    .tab.active { background: var(--primary); color: white; }
+    .mistake-item {
+      background: var(--card2);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+    .mistake-item .count {
+      display: inline-block;
+      background: var(--danger);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      margin-left: 8px;
+    }
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--card2);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .rank {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .rank.gold { background: #fbbf24; color: #000; }
+    .rank.silver { background: #94a3b8; color: #000; }
+    .rank.bronze { background: #b45309; color: #fff; }
+    .nav-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      z-index: 100;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      padding: 6px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .nav-btn.active { color: var(--primary); }
+    .nav-btn span { font-size: 1.3rem; }
+    .progress-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s;
+    }
+    .autocomplete {
+      position: absolute;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      max-height: 150px;
+      overflow-y: auto;
+      width: 100%;
+      z-index: 20;
+      box-shadow: var(--shadow);
+    }
+    .autocomplete div {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .autocomplete div:hover { background: var(--card2); }
+    .relative { position: relative; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-blue { background: rgba(59,130,246,0.2); color: #93c5fd; }
+    .badge-green { background: rgba(34,197,94,0.2); color: #86efac; }
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 10px;
+      z-index: 200;
+      box-shadow: var(--shadow);
+      animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+    .filter-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .tag {
+      padding: 4px 10px;
+      background: var(--card2);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+    }
+    .tag.active { background: var(--primary); border-color: var(--primary); }
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <!-- Screens will be injected here -->
+  </div>
+
+  <nav class="nav-bottom" id="bottomNav">
+    <button class="nav-btn active" data-screen="home"><span>🏠</span>首頁</button>
+    <button class="nav-btn" data-screen="practice"><span>🎯</span>練習</button>
+    <button class="nav-btn" data-screen="mistakes"><span>📕</span>錯題</button>
+    <button class="nav-btn" data-screen="leaderboard"><span>🏆</span>排行</button>
+    <button class="nav-btn" data-screen="script"><span>📖</span>劇本</button>
+  </nav>
+
+  <script>
+// ===================== SCRIPT DATA =====================
+const RAW_LINES = [
+  // Act I Scene 1
+  { act: "Act I", scene: "Scene 1", speakers: ["Narrator"], text: "It was 1431. After being defeated in battle, Joan of Arc was captured by the English. Accused of twelve criminal charges, she was sentenced to death by burning.", isNarrator: true },
+  { act: "Act I", scene: "Scene 1", speakers: ["English Officer"], text: "Burn the witch!", isNarrator: false },
+  { act: "Act I", scene: "Scene 1", speakers: ["Crowd"], text: "Burn the witch!", isNarrator: false },
+  { act: "Act I", scene: "Scene 1", speakers: ["Joan"], text: "I have already sworn my soul to the son. I must keep my vow to Him.", isNarrator: false },
+  { act: "Act I", scene: "Scene 1", speakers: ["English Officer"], text: "Heretic, in men's clothes against nature, blaspheming God to deceive all—face justice in fire!", isNarrator: false },
+  { act: "Act I", scene: "Scene 1", speakers: ["Gilles"], text: "Stop! I beg you, stop! She is no witch!", isNarrator: false },
+  { act: "Act I", scene: "Scene 1", speakers: ["English Officer"], text: "Execute the witch! Now!", isNarrator: false },
+  { act: "Act I", scene: "Scene 1", speakers: ["Narrator"], text: "Joan was fully engulfed in flames, fire mercilessly climbing toward her shoulders.", isNarrator: true },
+  { act: "Act I", scene: "Scene 1", speakers: ["Joan"], text: "No!", isNarrator: false },
+  { act: "Act I", scene: "Scene 1", speakers: ["Narrator"], text: "Gilles left the square. Watching his comrade wilt in the flames one by one, his heart grew cold and dark. In his darkest moments, he began his descent into the world of black magic.", isNarrator: true },
+  // Act I Scene 2
+  { act: "Act I", scene: "Scene 2", speakers: ["Gilles"], text: "Joan... you saved me once. Now, I must find a way to bring you back. If only I could start over, I would protect you from all danger and suffering!", isNarrator: false },
+  { act: "Act I", scene: "Scene 2", speakers: ["Gilles"], text: "My holy father... if thou wilt not answer, then allow the Dark Arts to guide me! I wish I could summon a person who can truly aid Joan. Grant me someone to save her! Amen!", isNarrator: false },
+  // Act II Scene 1
+  { act: "Act II", scene: "Scene 1", speakers: ["Narrator"], text: "It is 2026. A group of high school students is visiting a local museum.", isNarrator: true },
+  { act: "Act II", scene: "Scene 1", speakers: ["Teacher"], text: "Students, please look at this. This is one of the most famous figures in French history: Joan of Arc. In the 15th century, she led the French army against the English and was regarded as a national hero. However, unfortunately, she was eventually captured and convicted of heresy at the age of nineteen.", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Teacher"], text: "In the end, she was burned at the stake!", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Student A"], text: "That's so upsetting...", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Student B"], text: "She was merely nineteen!", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Tim"], text: "The stories of a hero always turn out to be tragic.", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Teacher"], text: "Hey! Tim, pay attention!", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Teacher"], text: "Legend has it that Joan had a companion named Gilles. It's said that after her death, consumed by grief and regret, he turned to the dark arts. He even wrote a...", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Teacher"], text: "...\"Cursed Grimoire\"!", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Student A", "Student B"], text: "Ahh!!", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Tim"], text: "Oh, come on. It is now the 21st century. Grimoires? Really?", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Teacher"], text: "And the book is said to still exist to this day.", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Tim"], text: "\"15th Century Anonymous Grimoire? Do Not Open\"? Wow. This looks like it's falling apart.", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Tim"], text: "Yew…It even bears a weird smell.", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Tim"], text: "Well... one quick peek shouldn't hurt, right?", isNarrator: false },
+  { act: "Act II", scene: "Scene 1", speakers: ["Tim"], text: "Oh my goodness!", isNarrator: false },
+  // Act III Scene 1
+  { act: "Act III", scene: "Scene 1", speakers: ["Narrator"], text: "It was 1431, the Battle of Jargeau, when there were merely two weeks remaining from the execution of Joan of Arc. In a fog-surrounded forest, the French army lies in wait, with their movements ghostly and silent.", isNarrator: true },
+  { act: "Act III", scene: "Scene 1", speakers: ["Gilles"], text: "It was legendary for you to be so brave in the battle last week. It's hard to believe that you were just a simple country girl a year ago.", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Joan"], text: "These victories are all the will of God. It is He who guides me through these battles.", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Gilles"], text: "It's a bit unusual for mist to be so thick at this hour, isn't it?", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Joan"], text: "True. Let us hope this is a gift from God, which may ensure the success of our ambush.", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Gilles"], text: "The foes are here!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Tim"], text: "Where the hell am I?! Hey! Are you guys filming a movie? Wow, this prop looks so real!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Gilles"], text: "What a fool!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Joan"], text: "Wait! Stop! Don't be so hasty. His clothes doesn't look like English uniforms.", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Tim"], text: "Oh, wow! The ground is shaking! high-budget production, huh!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Gilles"], text: "Shh! They are coming. Get ready!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Tim"], text: "Ready for what? Have the cameras started rolling?", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Gilles"], text: "Shut up. If you want to survive this, remain silent.", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Joan"], text: "I don't know who you are, but please—run while you still can.", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Narrator"], text: "While Joan and Gilles were distracted by the stranger, the English army arrived. However, a sudden, dramatic twist was about to occur.", isNarrator: true },
+  { act: "Act III", scene: "Scene 1", speakers: ["Gilles"], text: "What the hell is this sound?!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Tim"], text: "Oh no...", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["English Soldier B"], text: "Someone's there!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Joan"], text: "It's too late. We must fight!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Joan"], text: "All troops, ambush! Charge!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["English Officer"], text: "An ambush! To arms! Defend yourselves!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Tim"], text: "Hey! Are you actually fighting? Ain't this a movie? This is dangerous!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Joan"], text: "In the name of the Father, the Son, and the Holy Spirit—Fight!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Narrator"], text: "Unfortunately, more English reinforcements emerge from the shadows. The French are being surrounded.", isNarrator: true },
+  { act: "Act III", scene: "Scene 1", speakers: ["English Officer"], text: "Seize the witch! For our glorious Father!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Tim"], text: "No way... You guys are actually at war?!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Gilles"], text: "Obviously! Why aren't you running yet?!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["English Soldier B"], text: "What is this dark magic?! Look at the flag!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Tim"], text: "Haha! Behold the power of science!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["English Officer"], text: "You dare use sorcery to burn our banner?! Sacrilege!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Tim"], text: "See? This is God's punishment for you, big-mouthed idiots!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["Gilles"], text: "That's what you get for insulting our Saint!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["English Soldier A"], text: "WHY?! Why would God burn our flag? Is he trying to start a barbecue?!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["English Private"], text: "Sir, we have to retreat!", isNarrator: false },
+  { act: "Act III", scene: "Scene 1", speakers: ["English Officer"], text: "Curse you! Retreat! But mark my words... this isn't over!", isNarrator: false },
+  // Act IV Scene 1
+  { act: "Act IV", scene: "Scene 1", speakers: ["Narrator"], text: "In the English camp, the atmosphere is heavy. The wounded are silent in their fear. The Officer looks on with chilling indifference.", isNarrator: true },
+  { act: "Act IV", scene: "Scene 1", speakers: ["Officer"], text: "I know everything. I know which of you was the first to tuck tail and run.", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["Officer"], text: "And... you.", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["Lackey"], text: "Me? Mercy, sir! What did I do wrong?", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["Officer"], text: "What does \"using our sacred Empire's flag for a barbecue\" mean then? You were the one who started the panic!", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["Lackey"], text: "It was... it wasn't on purpose! Hehe...", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["Officer"], text: "Now that you're defeated, are you satisfied with this?", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["Soldiers"], text: "...No, sir.", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["Officer"], text: "Stop mumbling, Louder!", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["Soldiers"], text: "NO, SIR!", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["Officer"], text: "Then shouldn't we take our revenge?", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["English Soldier A"], text: "Com... Commander, the French had a new brat with them. He came out of nowhere and burned our sacred flag!", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["English Soldier B"], text: "It's an ill omen, sir!", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["Lackey"], text: "Honestly, I kind of want to learn how he did that.", isNarrator: false },
+  { act: "Act IV", scene: "Scene 1", speakers: ["Officer"], text: "Shut up! Joan and that pack of peasants are nothing but slaves to Satan! Why should we fear them? Remember how they humiliated us today? Today, they burned our flag. Tomorrow... we burn their Saint!", isNarrator: false },
+  // Act V Scene 1
+  { act: "Act V", scene: "Scene 1", speakers: ["Narrator"], text: "Against the odds, the French have secured a temporary victory. Grateful and curious about the \"miracle-working\" Tim, Joan, and her commanders invite him to join their victory feast. The camp is alive with energy as soldiers sing and enjoy a hard-earned meal.", isNarrator: true },
+  { act: "Act V", scene: "Scene 1", speakers: ["French Soldier"], text: "Hey, brother! It seems that you're quite talented, huh!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "Uh, yeah! Thank God for empowering me...?", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Joan"], text: "I cannot find the words to express my gratitude. Your help in repelling the English was invaluable.", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Gilles"], text: "Since Joan has spoken so highly of you, I shall overlook your earlier impudence... for now.", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "Come on, don't be so serious. Aren't we just rehearsing for the play?", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Joan", "Gilles"], text: "Huh?", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "...Huh?", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "Wait! Are you serious? I actually traveled back in time?! So... that battle just now... that was real?", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Gilles"], text: "This is no place for your jokes—", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Joan"], text: "Forgive me, I have not properly introduced myself. I am Joan of Arc. I carry the will of God to aid the Dauphin and save France，what about you?", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "I'm Tim. I'm from the 21th century and accidentally travel back here.", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Gilles"], text: "And I am Gilles de Rais. If you ever dare to lift a finger against Joan, I will make you regret it.", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "Ha... ha... very funny.", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "So, can I ask... how did this all start?", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Joan"], text: "I was once a simple girl from the countryside. But one day, I heard the voices of the Saints.", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "The voices?", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Joan"], text: "They commanded me to help the Prince defeat the English and reclaim our land.", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "And then what happened?", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Gilles"], text: "Joan saved my life once. It is my greatest honor to follow her onto the field of battle. Under her command, we have won several victories. Her courage is known across the world—she is our hero, our Saint!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "She definitely is!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Gilles"], text: "Yet those filthy English dogs... they dare to call her a witch!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Joan"], text: "Enough. Let's talk about something other than this.", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "Check this out! Let me show you a dance from the future!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Soldier"], text: "It's... It's bad! They're here!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Joan"], text: "Be prepared for battle!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "What? The English again? Shouldn't they be too scared to come out?", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Gilles"], text: "They're like cockroaches—they'll never be dead. Keep your head on straight, kid.", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Officer"], text: "Joan, I didn't expect you to be so... relaxed.", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "Oh, look! It's Mr. Grumpy-Pants!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Officer"], text: "Perfect. Our new friend is here too. Taking both of you at once sounds like a plan.", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "Catch us if you can!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Lackey"], text: "Aah! Help me, Joan!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Joan"], text: "What's wrong ? Aaaaaaaaaa~", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Officer"], text: "STOP! Don't worry... my only target is Joan.", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "You won't get away with this!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Officer"], text: "Boy, do you want to die too?", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Joan"], text: "Tim, let go! Save yourself!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "No! Joan! If you go, they'll burn you as a witch!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Joan"], text: "Follow God's guidance! Do not lose hope!", isNarrator: false },
+  { act: "Act V", scene: "Scene 1", speakers: ["Tim"], text: "JOAN!", isNarrator: false },
+  // Act VI Scene 1
+  { act: "Act VI", scene: "Scene 1", speakers: ["Gilles"], text: "Damn it! It's because of your fooling around that she was captured! We shouldn't have trusted a stranger like you!", isNarrator: false },
+  { act: "Act VI", scene: "Scene 1", speakers: ["Tim"], text: "Shut up! Mere blaming won't save her. You should consider how to rescue her.", isNarrator: false },
+  { act: "Act VI", scene: "Scene 1", speakers: ["Gilles"], text: "Hmph! If I had any other choice, I wouldn't listen to every single word you say. But fine... what's your \"plan\"?", isNarrator: false },
+  { act: "Act VI", scene: "Scene 1", speakers: ["Tim"], text: "Hang on, let me ask ChatGPT... wait, there's no Wi-Fi in the 15th century!", isNarrator: false },
+  { act: "Act VI", scene: "Scene 1", speakers: ["Gilles"], text: "First, we need to know where she is and when her trial or execution will be. You claim to be from the future—tell me!", isNarrator: false },
+  { act: "Act VI", scene: "Scene 1", speakers: ["Tim"], text: "Hmmm... the history has it that… it should be tomorrow morning... at Rouen Plaza!", isNarrator: false },
+  { act: "Act VI", scene: "Scene 1", speakers: ["Gilles"], text: "Fine. We need a distraction. That strange \"magic cuboid\" of yours—what else can it do?", isNarrator: false },
+  { act: "Act VI", scene: "Scene 1", speakers: ["Gilles"], text: "What the hell is that?!", isNarrator: false },
+  { act: "Act VI", scene: "Scene 1", speakers: ["Tim"], text: "You mean this?...I have an idea!", isNarrator: false },
+  // Act VII Operation
+  { act: "Act VII", scene: "Scene 1", speakers: ["Tim"], text: "Hey, who's that being executed? Is she famous?", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Bystander"], text: "Ain't you know? She's an envoy sent by Satan to help the French. The English armed force capture her to stop the demon from killing us all.", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Tim"], text: "Oh... hey.", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Bystander"], text: "What?", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Tim"], text: "Do you believe in \"The Light\"?", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Bystander"], text: "Huh? What are you talking about—", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Tim"], text: "WHO'S YOUR DADDY!", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Bystander"], text: "AAAAAHHHH!", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Tim"], text: "Sorry, buddy, but I need your clothes.", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Officer"], text: "Burn the witch!", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Crowd"], text: "Burn the witch!", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Joan"], text: "I have sworn my loyalty to the son. I will keep my vow.", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Officer"], text: "Execute her!", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Gilles"], text: "STOP! I am Gilles de Rais, and I am here to rescue the Saint!", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Officer"], text: "You again? Why are you here? How dare you?", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Gilles"], text: "Joan is the envoy of God! You will face His wrath!", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Officer"], text: "MY EYES! I CAN'T SEE! WHAT SORCERY IS THIS?", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Gilles"], text: "Well… God has come to punish you.", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Lackey"], text: "Wow, is God taking apprentices? I can host another \"Last Supper\" if He wants!", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Officer"], text: "YOU IDIOT! CAPTURE THEM!", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Tim"], text: "Joan, I'm here!", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Officer"], text: "If I can't burn her, I'll burn YOU!", isNarrator: false },
+  { act: "Act VII", scene: "Scene 1", speakers: ["Tim"], text: "Whoa, buddy! Chill out!", isNarrator: false },
+  // Act VIII Back to the Future
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Narrator"], text: "All of a sudden, Tim traveled to the previous museum. When he opened his eyes again, he found himself back in the museum hall.", isNarrator: true },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Student A"], text: "Tim! Why did you stop? Keep up!", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Tim"], text: "How... how long was I gone?", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Student B"], text: "About… three minutes? We realized you weren't behind us, so we came back to find you.", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Teacher"], text: "Tim! You scared me half to death! Don't wander off! And why is this display open?", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Tim"], text: "Ms... where did this book come from?", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Teacher"], text: "This? The legend has it that it was written by Joan's companion, Gilles. It's a personal diary.", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Tim"], text: "The text... it changed!", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Student A"], text: "What are you talking about?", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Tim"], text: "It says, \"Thank you, the envoy from God. Your arrival changed everything.\" Wasn't this supposed to be a \"Cursed Book\" that was smelly and warned people to stay away?", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Student B"], text: "Were you dreaming? Why would the \"Kind Gilles\" write a cursed book?", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Teacher"], text: "Exactly. After Saint Joan defeated the English for the King, she retired to the countryside and lived as a nun until she passed away peacefully of old age.", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Tim"], text: "It worked... I actually did it!", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Student A"], text: "What are you grinning about? Weirdo...", isNarrator: false },
+  { act: "Act VIII", scene: "Scene 1", speakers: ["Narrator"], text: "History is not only written by heroes, but also by the people who choose to help them.", isNarrator: true },
+];
+
+// Add order index
+RAW_LINES.forEach((l, i) => l.order = i);
+
+// Collect all unique speakers
+const ALL_SPEAKERS = [...new Set(RAW_LINES.flatMap(l => l.speakers))].sort();
+const ACTS = [...new Set(RAW_LINES.map(l => l.act))];
+
+// ===================== STORAGE =====================
+const Storage = {
+  get(key, def) {
+    try {
+      const v = localStorage.getItem('edcg_' + key);
+      return v ? JSON.parse(v) : def;
+    } catch { return def; }
+  },
+  set(key, val) {
+    localStorage.setItem('edcg_' + key, JSON.stringify(val));
+  }
+};
+
+// ===================== STATE =====================
+let state = {
+  screen: 'home',
+  roleMode: 'all',
+  myRoles: [],
+  answerMode: 'mc',
+  selectedActs: [...ACTS],
+  quizQueue: [],
+  currentIdx: 0,
+  selectedSpeakers: [],
+  speakerAnswered: false,
+  speakerCorrect: false,
+  lineAnswered: false,
+  lineCorrect: false,
+  mcOptions: [],
+  inputValue: '',
+  sessionSpeakerScore: 0,
+  sessionLineScore: 0,
+  sessionTotal: 0,
+  nickname: Storage.get('nickname', ''),
+  highlightRoles: [],
+};
+
+// ===================== UTILS =====================
+function normalize(str) {
+  return (str || '')
+    .toLowerCase()
+    .replace(/[^\w\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i-1] === b[j-1]
+        ? dp[i-1][j-1]
+        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function isCloseMatch(input, correct) {
+  const a = normalize(input);
+  const b = normalize(correct);
+  if (a === b) return true;
+  if (a.length < 3) return false;
+  const dist = levenshtein(a, b);
+  const maxLen = Math.max(a.length, b.length);
+  return dist <= Math.max(2, Math.floor(maxLen * 0.15));
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function toast(msg, ms = 2000) {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), ms);
+}
+
+// ===================== QUIZ LOGIC =====================
+function buildQuizQueue() {
+  const lines = RAW_LINES.filter(l => state.selectedActs.includes(l.act));
+  const pairs = [];
+  for (let i = 0; i < lines.length - 1; i++) {
+    const prev = lines[i];
+    const next = lines[i + 1];
+    if (next.order !== prev.order + 1) continue;
+    if (state.roleMode === 'mine') {
+      const related = [...prev.speakers, ...next.speakers].some(s => state.myRoles.includes(s));
+      if (!related) continue;
+    }
+    pairs.push({ prev, next });
+  }
+  return shuffle(pairs);
+}
+
+function getMCOptions(correctText) {
+  const others = RAW_LINES
+    .map(l => l.text)
+    .filter(t => t !== correctText);
+  const targetLen = correctText.length;
+  const scored = others.map(t => ({
+    t,
+    score: Math.abs(t.length - targetLen) + Math.random() * 20
+  })).sort((a, b) => a.score - b.score);
+  const distractors = scored.slice(0, 3).map(x => x.t);
+  return shuffle([correctText, ...distractors]);
+}
+
+function recordMistake(type, prevLine, correct, wrong) {
+  const key = type === 'speaker' ? 'mistakes_speaker' : 'mistakes_line';
+  const list = Storage.get(key, []);
+  const id = prevLine.order + '|' + (type === 'speaker' ? correct.join(',') : correct);
+  const existing = list.find(m => m.id === id);
+  if (existing) {
+    existing.count++;
+    existing.lastWrong = wrong;
+  } else {
+    list.push({
+      id,
+      prevSpeakers: prevLine.speakers,
+      prevText: prevLine.text,
+      correct,
+      lastWrong: wrong,
+      count: 1
+    });
+  }
+  list.sort((a, b) => b.count - a.count);
+  Storage.set(key, list);
+}
+
+function saveSessionScore() {
+  if (!state.nickname) return;
+  const key = `lb_${state.roleMode}_${state.answerMode}`;
+  const board = Storage.get(key, []);
+  const entry = {
+    name: state.nickname,
+    speaker: state.sessionSpeakerScore,
+    line: state.sessionLineScore,
+    total: state.sessionSpeakerScore + state.sessionLineScore,
+    date: new Date().toISOString(),
+    answered: state.sessionTotal
+  };
+  const idx = board.findIndex(e => e.name === state.nickname);
+  if (idx >= 0) {
+    if (entry.total > board[idx].total) board[idx] = entry;
+  } else {
+    board.push(entry);
+  }
+  board.sort((a, b) => b.total - a.total);
+  Storage.set(key, board.slice(0, 50));
+}
+
+// ===================== RENDER =====================
+const app = document.getElementById('app');
+const bottomNav = document.getElementById('bottomNav');
+
+function setScreen(name) {
+  state.screen = name;
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.screen === name);
+  });
+  render();
+  window.scrollTo(0, 0);
+}
+
+bottomNav.addEventListener('click', e => {
+  const btn = e.target.closest('.nav-btn');
+  if (btn) setScreen(btn.dataset.screen);
+});
+
+function render() {
+  switch (state.screen) {
+    case 'home': renderHome(); break;
+    case 'practice': renderPracticeSetup(); break;
+    case 'quiz': renderQuiz(); break;
+    case 'result': renderResult(); break;
+    case 'mistakes': renderMistakes(); break;
+    case 'leaderboard': renderLeaderboard(); break;
+    case 'script': renderScript(); break;
+    default: renderHome();
+  }
+}
+
+function renderHome() {
+  app.innerHTML = `
+    <h1>🎭 英語話劇台詞接龍</h1>
+    <p class="subtitle">English Drama Chain Game · 熟記每一句的下一句</p>
+    <div class="card">
+      <p style="margin-bottom:16px;color:var(--text-muted)">老師要求：聽到上一句 → 立刻知道下一句是誰講、講什麼。</p>
+      <div class="btn-group">
+        <button class="btn btn-primary" id="btnStart">🎯 開始練習</button>
+        <button class="btn btn-secondary" id="btnScript">📖 查看完整劇本</button>
+        <button class="btn btn-secondary" id="btnMistakes">📕 我的錯題本</button>
+        <button class="btn btn-secondary" id="btnLB">🏆 排行榜</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>目前設定</h3>
+      <p style="font-size:0.9rem;color:var(--text-muted)">
+        暱稱：${state.nickname || '尚未設定'}<br>
+        劇本共 <strong>${RAW_LINES.length}</strong> 句台詞
+      </p>
+      <button class="btn btn-sm btn-outline" id="btnNick" style="margin-top:12px;width:auto">設定暱稱</button>
+    </div>
+  `;
+  document.getElementById('btnStart').onclick = () => setScreen('practice');
+  document.getElementById('btnScript').onclick = () => setScreen('script');
+  document.getElementById('btnMistakes').onclick = () => setScreen('mistakes');
+  document.getElementById('btnLB').onclick = () => setScreen('leaderboard');
+  document.getElementById('btnNick').onclick = () => {
+    const name = prompt('請輸入暱稱（會顯示在公開排行榜）：', state.nickname || '');
+    if (name !== null) {
+      state.nickname = name.trim().slice(0, 20);
+      Storage.set('nickname', state.nickname);
+      render();
+    }
+  };
+}
+
+function renderPracticeSetup() {
+  const actChecks = ACTS.map(a => `
+    <label class="checkbox-item">
+      <input type="checkbox" value="${a}" ${state.selectedActs.includes(a) ? 'checked' : ''} class="act-cb">
+      ${a}
+    </label>
+  `).join('');
+
+  const roleChecks = ALL_SPEAKERS.map(r => `
+    <label class="checkbox-item">
+      <input type="checkbox" value="${r}" ${state.myRoles.includes(r) ? 'checked' : ''} class="role-cb">
+      ${r}
+    </label>
+  `).join('');
+
+  app.innerHTML = `
+    <h2>練習設定</h2>
+    <div class="card">
+      <h3>① 角色範圍</h3>
+      <div class="radio-group">
+        <label class="radio-item ${state.roleMode === 'mine' ? 'selected' : ''}">
+          <input type="radio" name="roleMode" value="mine" ${state.roleMode === 'mine' ? 'checked' : ''}>
+          我的角色（簡單）— 只出與自己相關的上下句
+        </label>
+        <label class="radio-item ${state.roleMode === 'all' ? 'selected' : ''}">
+          <input type="radio" name="roleMode" value="all" ${state.roleMode === 'all' ? 'checked' : ''}>
+          全角色（困難）— 所有台詞都可能出現
+        </label>
+      </div>
+      <div id="myRolesBox" class="${state.roleMode === 'mine' ? '' : 'hidden'}" style="margin-top:12px">
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px">勾選你負責的角色（可多選）：</p>
+        <div class="checkbox-group" style="max-height:200px;overflow-y:auto">${roleChecks}</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>② 作答模式</h3>
+      <div class="radio-group">
+        <label class="radio-item ${state.answerMode === 'mc' ? 'selected' : ''}">
+          <input type="radio" name="answerMode" value="mc" ${state.answerMode === 'mc' ? 'checked' : ''}>
+          四選一（較快，適合剛開始）
+        </label>
+        <label class="radio-item ${state.answerMode === 'input' ? 'selected' : ''}">
+          <input type="radio" name="answerMode" value="input" ${state.answerMode === 'input' ? 'checked' : ''}>
+          整句輸入（較硬，適合衝刺）
+        </label>
+      </div>
+    </div>
+    <div class="card">
+      <h3>③ 出題範圍</h3>
+      <div class="checkbox-group">${actChecks}</div>
+      <button class="btn btn-sm btn-outline" id="btnAllActs" style="margin-top:8px;width:auto">全選 / 取消全選</button>
+    </div>
+    <button class="btn btn-primary" id="btnGo">開始答題！</button>
+    <button class="btn btn-secondary" id="btnBack" style="margin-top:10px">返回</button>
+  `;
+
+  document.querySelectorAll('input[name="roleMode"]').forEach(r => {
+    r.onchange = () => {
+      state.roleMode = r.value;
+      document.getElementById('myRolesBox').classList.toggle('hidden', r.value !== 'mine');
+      document.querySelectorAll('.radio-item').forEach(el => {
+        if (el.querySelector('input[name="roleMode"]')) {
+          el.classList.toggle('selected', el.querySelector('input').checked);
+        }
+      });
+    };
+  });
+  document.querySelectorAll('input[name="answerMode"]').forEach(r => {
+    r.onchange = () => {
+      state.answerMode = r.value;
+      document.querySelectorAll('.radio-item').forEach(el => {
+        if (el.querySelector('input[name="answerMode"]')) {
+          el.classList.toggle('selected', el.querySelector('input').checked);
+        }
+      });
+    };
+  });
+  document.querySelectorAll('.role-cb').forEach(cb => {
+    cb.onchange = () => {
+      state.myRoles = [...document.querySelectorAll('.role-cb:checked')].map(c => c.value);
+    };
+  });
+  document.querySelectorAll('.act-cb').forEach(cb => {
+    cb.onchange = () => {
+      state.selectedActs = [...document.querySelectorAll('.act-cb:checked')].map(c => c.value);
+    };
+  });
+  document.getElementById('btnAllActs').onclick = () => {
+    const all = document.querySelectorAll('.act-cb');
+    const checked = [...all].every(c => c.checked);
+    all.forEach(c => c.checked = !checked);
+    state.selectedActs = checked ? [] : [...ACTS];
+  };
+  document.getElementById('btnBack').onclick = () => setScreen('home');
+  document.getElementById('btnGo').onclick = () => {
+    if (state.selectedActs.length === 0) {
+      toast('請至少選擇一個 Act');
+      return;
+    }
+    if (state.roleMode === 'mine' && state.myRoles.length === 0) {
+      toast('請至少勾選一個自己的角色');
+      return;
+    }
+    state.quizQueue = buildQuizQueue();
+    if (state.quizQueue.length === 0) {
+      toast('目前條件下沒有可練習的題目，請調整範圍');
+      return;
+    }
+    state.currentIdx = 0;
+    state.sessionSpeakerScore = 0;
+    state.sessionLineScore = 0;
+    state.sessionTotal = 0;
+    state.selectedSpeakers = [];
+    state.speakerAnswered = false;
+    state.lineAnswered = false;
+    startQuestion();
+  };
+}
+
+function startQuestion() {
+  state.selectedSpeakers = [];
+  state.speakerAnswered = false;
+  state.speakerCorrect = false;
+  state.lineAnswered = false;
+  state.lineCorrect = false;
+  state.inputValue = '';
+  const { next } = state.quizQueue[state.currentIdx];
+  if (state.answerMode === 'mc') {
+    state.mcOptions = getMCOptions(next.text);
+  }
+  state.screen = 'quiz';
+  render();
+}
+
+function renderQuiz() {
+  const q = state.quizQueue[state.currentIdx];
+  if (!q) {
+    setScreen('result');
+    return;
+  }
+  const { prev, next } = q;
+  const progress = ((state.currentIdx) / state.quizQueue.length) * 100;
+
+  let speakerSection = '';
+  if (!state.speakerAnswered) {
+    const buttons = ALL_SPEAKERS.map(s => `
+      <button class="btn btn-outline role-btn ${state.selectedSpeakers.includes(s) ? 'selected' : ''}" data-role="${s}">${s}</button>
+    `).join('');
+    speakerSection = `
+      <div class="card">
+        <h3>第一小題：下一位角色是誰？</h3>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px">可複選（合講時需選全部正確角色）</p>
+        <div class="btn-grid">${buttons}</div>
+        <button class="btn btn-primary" id="btnSubmitSpeaker" style="margin-top:16px">確認角色</button>
+      </div>
+    `;
+  } else {
+    const selectedSet = new Set(state.selectedSpeakers);
+    const isCorrect = next.speakers.length === state.selectedSpeakers.length &&
+      next.speakers.every(s => selectedSet.has(s));
+    speakerSection = `
+      <div class="result-box ${isCorrect ? 'correct' : 'wrong'}">
+        <strong>${isCorrect ? '✅ 角色正確！' : '❌ 角色錯誤'}</strong><br>
+        正確：${next.speakers.join(' & ')}
+        ${!isCorrect ? `<br>你選：${state.selectedSpeakers.join(' & ') || '（未選）'}` : ''}
+      </div>
+    `;
+  }
+
+  let lineSection = '';
+  if (state.speakerAnswered && !state.lineAnswered) {
+    if (state.answerMode === 'mc') {
+      const opts = state.mcOptions.map((t, i) => `
+        <div class="option-card" data-idx="${i}">${t}</div>
+      `).join('');
+      lineSection = `
+        <div class="card">
+          <h3>第二小題：下一句台詞是什麼？</h3>
+          <div style="display:flex;flex-direction:column;gap:10px">${opts}</div>
+        </div>
+      `;
+    } else {
+      lineSection = `
+        <div class="card">
+          <h3>第二小題：下一句台詞是什麼？</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px">大小寫、標點、空格不計分</p>
+          <div class="relative">
+            <input type="text" id="lineInput" placeholder="輸入下一句台詞..." autocomplete="off" value="${state.inputValue}">
+            <div class="autocomplete hidden" id="acBox"></div>
+          </div>
+          <button class="btn btn-primary" id="btnSubmitLine" style="margin-top:12px">送出</button>
+        </div>
+      `;
+    }
+  } else if (state.lineAnswered) {
+    lineSection = `
+      <div class="result-box ${state.lineCorrect ? 'correct' : 'wrong'}">
+        <strong>${state.lineCorrect ? '✅ 台詞正確！' : '❌ 台詞錯誤'}</strong><br>
+        正確答案：<em>${next.text}</em>
+      </div>
+      <button class="btn btn-primary" id="btnNext">下一題 →</button>
+    `;
+  }
+
+  app.innerHTML = `
+    <div class="score-bar">
+      <div class="score-item">題目 ${state.currentIdx + 1} / ${state.quizQueue.length}</div>
+      <div class="score-item">角色 <strong>${state.sessionSpeakerScore}</strong></div>
+      <div class="score-item">台詞 <strong>${state.sessionLineScore}</strong></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+    <div class="prev-line">
+      <div class="speaker">${prev.speakers.join(' & ')}</div>
+      <div class="text">${prev.text}</div>
+    </div>
+    ${speakerSection}
+    ${lineSection}
+  `;
+
+  if (!state.speakerAnswered) {
+    document.querySelectorAll('.role-btn').forEach(btn => {
+      btn.onclick = () => {
+        const role = btn.dataset.role;
+        if (state.selectedSpeakers.includes(role)) {
+          state.selectedSpeakers = state.selectedSpeakers.filter(s => s !== role);
+        } else {
+          state.selectedSpeakers.push(role);
+        }
+        render();
+      };
+    });
+    document.getElementById('btnSubmitSpeaker').onclick = () => {
+      const selectedSet = new Set(state.selectedSpeakers);
+      state.speakerCorrect = next.speakers.length === state.selectedSpeakers.length &&
+        next.speakers.every(s => selectedSet.has(s));
+      state.speakerAnswered = true;
+      if (state.speakerCorrect) {
+        state.sessionSpeakerScore++;
+      } else {
+        recordMistake('speaker', prev, next.speakers, state.selectedSpeakers);
+      }
+      state.sessionTotal++;
+      render();
+    };
+  }
+
+  if (state.speakerAnswered && !state.lineAnswered && state.answerMode === 'mc') {
+    document.querySelectorAll('.option-card').forEach(card => {
+      card.onclick = () => {
+        const idx = +card.dataset.idx;
+        const chosen = state.mcOptions[idx];
+        state.lineCorrect = chosen === next.text;
+        state.lineAnswered = true;
+        if (state.lineCorrect) {
+          state.sessionLineScore++;
+        } else {
+          recordMistake('line', prev, next.text, chosen);
+        }
+        document.querySelectorAll('.option-card').forEach((c, i) => {
+          if (state.mcOptions[i] === next.text) c.classList.add('correct');
+          else if (i === idx) c.classList.add('wrong');
+        });
+        setTimeout(() => render(), 600);
+      };
+    });
+  }
+
+  if (state.speakerAnswered && !state.lineAnswered && state.answerMode === 'input') {
+    const input = document.getElementById('lineInput');
+    const acBox = document.getElementById('acBox');
+    input.focus();
+    input.oninput = () => {
+      state.inputValue = input.value;
+      const val = normalize(input.value);
+      if (val.length < 2) {
+        acBox.classList.add('hidden');
+        return;
+      }
+      const suggestions = RAW_LINES
+        .map(l => l.text)
+        .filter(t => normalize(t).includes(val) || t.toLowerCase().startsWith(input.value.toLowerCase()))
+        .slice(0, 5);
+      if (suggestions.length) {
+        acBox.innerHTML = suggestions.map(s => `<div data-s="${s.replace(/"/g, '&quot;')}">${s}</div>`).join('');
+        acBox.classList.remove('hidden');
+        acBox.querySelectorAll('div').forEach(d => {
+          d.onclick = () => {
+            input.value = d.dataset.s;
+            state.inputValue = d.dataset.s;
+            acBox.classList.add('hidden');
+          };
+        });
+      } else {
+        acBox.classList.add('hidden');
+      }
+    };
+    document.getElementById('btnSubmitLine').onclick = () => {
+      const val = input.value.trim();
+      if (!val) { toast('請輸入台詞'); return; }
+      if (isCloseMatch(val, next.text)) {
+        if (normalize(val) === normalize(next.text)) {
+          state.lineCorrect = true;
+          state.lineAnswered = true;
+          state.sessionLineScore++;
+          render();
+        } else {
+          if (confirm(`你是不是要打：\n\n「${next.text}」\n\n按「確定」視為正確，按「取消」重新輸入`)) {
+            state.lineCorrect = true;
+            state.lineAnswered = true;
+            state.sessionLineScore++;
+            render();
+          }
+        }
+      } else {
+        state.lineCorrect = false;
+        state.lineAnswered = true;
+        recordMistake('line', prev, next.text, val);
+        render();
+      }
+    };
+    input.onkeydown = e => {
+      if (e.key === 'Enter') document.getElementById('btnSubmitLine').click();
+    };
+  }
+
+  if (state.lineAnswered) {
+    document.getElementById('btnNext').onclick = () => {
+      state.currentIdx++;
+      if (state.currentIdx >= state.quizQueue.length) {
+        saveSessionScore();
+        setScreen('result');
+      } else {
+        startQuestion();
+      }
+    };
+  }
+}
+
+function renderResult() {
+  const totalQ = state.quizQueue.length;
+  const sp = state.sessionSpeakerScore;
+  const ln = state.sessionLineScore;
+  app.innerHTML = `
+    <h2>本回合結束！</h2>
+    <div class="card" style="text-align:center">
+      <p style="font-size:1.2rem;margin-bottom:16px">共 ${totalQ} 題</p>
+      <div style="display:flex;justify-content:center;gap:24px;margin-bottom:20px">
+        <div>
+          <div style="font-size:2rem;font-weight:700;color:var(--highlight)">${sp}</div>
+          <div style="color:var(--text-muted)">角色正確</div>
+        </div>
+        <div>
+          <div style="font-size:2rem;font-weight:700;color:var(--highlight)">${ln}</div>
+          <div style="color:var(--text-muted)">台詞正確</div>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);font-size:0.9rem">模式：${state.roleMode === 'mine' ? '我的角色' : '全角色'} / ${state.answerMode === 'mc' ? '四選一' : '整句輸入'}</p>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" id="btnAgain">再練一次</button>
+      <button class="btn btn-secondary" id="btnHome">回首頁</button>
+      <button class="btn btn-secondary" id="btnMistakes">查看錯題本</button>
+    </div>
+  `;
+  document.getElementById('btnAgain').onclick = () => setScreen('practice');
+  document.getElementById('btnHome').onclick = () => setScreen('home');
+  document.getElementById('btnMistakes').onclick = () => setScreen('mistakes');
+}
+
+function renderMistakes() {
+  const spMistakes = Storage.get('mistakes_speaker', []);
+  const lnMistakes = Storage.get('mistakes_line', []);
+  app.innerHTML = `
+    <h2>📕 錯題本</h2>
+    <div class="tabs">
+      <button class="tab active" data-tab="speaker">角色錯誤 (${spMistakes.length})</button>
+      <button class="tab" data-tab="line">台詞錯誤 (${lnMistakes.length})</button>
+    </div>
+    <div id="mistakeList"></div>
+    <button class="btn btn-secondary" id="btnClearMistakes" style="margin-top:16px">清除全部錯題</button>
+  `;
+  const listEl = document.getElementById('mistakeList');
+  function showTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    const data = tab === 'speaker' ? spMistakes : lnMistakes;
+    if (data.length === 0) {
+      listEl.innerHTML = '<div class="empty-state">目前沒有錯題，很棒！</div>';
+      return;
+    }
+    listEl.innerHTML = data.map(m => `
+      <div class="mistake-item">
+        <div style="color:var(--text-muted);font-size:0.8rem;margin-bottom:4px">上一句：${m.prevSpeakers.join(' & ')} — ${m.prevText.slice(0, 60)}${m.prevText.length > 60 ? '…' : ''}</div>
+        <div><strong>正確：</strong>${Array.isArray(m.correct) ? m.correct.join(' & ') : m.correct}</div>
+        <div style="color:var(--danger);font-size:0.85rem">你上次答：${Array.isArray(m.lastWrong) ? m.lastWrong.join(' & ') : m.lastWrong}</div>
+        <span class="count">錯 ${m.count} 次</span>
+      </div>
+    `).join('');
+  }
+  showTab('speaker');
+  document.querySelectorAll('.tab').forEach(t => t.onclick = () => showTab(t.dataset.tab));
+  document.getElementById('btnClearMistakes').onclick = () => {
+    if (confirm('確定清除所有錯題紀錄？')) {
+      Storage.set('mistakes_speaker', []);
+      Storage.set('mistakes_line', []);
+      render();
+    }
+  };
+}
+
+function renderLeaderboard() {
+  const modes = [
+    { key: 'mine_mc', label: '我的角色 / 四選一' },
+    { key: 'mine_input', label: '我的角色 / 整句輸入' },
+    { key: 'all_mc', label: '全角色 / 四選一' },
+    { key: 'all_input', label: '全角色 / 整句輸入' },
+  ];
+  app.innerHTML = `
+    <h2>🏆 排行榜</h2>
+    <p class="subtitle">本機紀錄（同一裝置可見）。設定暱稱後練習即可上榜。</p>
+    <div class="tabs" id="lbTabs">
+      ${modes.map((m, i) => `<button class="tab ${i===0?'active':''}" data-key="${m.key}">${m.label}</button>`).join('')}
+    </div>
+    <div id="lbList"></div>
+    <div class="card" style="margin-top:16px">
+      <h3>匯出 / 匯入（分享給同學）</h3>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px">把 JSON 複製給同學，或貼上同學的資料合併。</p>
+      <button class="btn btn-sm btn-outline" id="btnExport" style="width:auto;margin-right:8px">匯出全部排行</button>
+      <button class="btn btn-sm btn-outline" id="btnImport" style="width:auto">匯入合併</button>
+    </div>
+  `;
+  function showLB(key) {
+    document.querySelectorAll('#lbTabs .tab').forEach(t => t.classList.toggle('active', t.dataset.key === key));
+    const board = Storage.get('lb_' + key, []);
+    const list = document.getElementById('lbList');
+    if (board.length === 0) {
+      list.innerHTML = '<div class="empty-state">尚無紀錄，快去練習吧！</div>';
+      return;
+    }
+    list.innerHTML = board.map((e, i) => `
+      <div class="leaderboard-item">
+        <div class="rank ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i+1}</div>
+        <div style="flex:1">
+          <strong>${e.name}</strong>
+          <div style="font-size:0.8rem;color:var(--text-muted)">角色 ${e.speaker} · 台詞 ${e.line} · 共 ${e.answered} 題</div>
+        </div>
+        <div style="font-weight:700;color:var(--highlight)">${e.total}</div>
+      </div>
+    `).join('');
+  }
+  showLB('mine_mc');
+  document.querySelectorAll('#lbTabs .tab').forEach(t => t.onclick = () => showLB(t.dataset.key));
+  document.getElementById('btnExport').onclick = () => {
+    const data = {};
+    modes.forEach(m => data[m.key] = Storage.get('lb_' + m.key, []));
+    const str = JSON.stringify(data, null, 2);
+    navigator.clipboard.writeText(str).then(() => toast('已複製到剪貼簿')).catch(() => {
+      prompt('請手動複製：', str);
+    });
+  };
+  document.getElementById('btnImport').onclick = () => {
+    const str = prompt('貼上匯出的 JSON：');
+    if (!str) return;
+    try {
+      const data = JSON.parse(str);
+      modes.forEach(m => {
+        if (data[m.key]) {
+          const existing = Storage.get('lb_' + m.key, []);
+          const map = {};
+          [...existing, ...data[m.key]].forEach(e => {
+            if (!map[e.name] || e.total > map[e.name].total) map[e.name] = e;
+          });
+          const merged = Object.values(map).sort((a, b) => b.total - a.total).slice(0, 50);
+          Storage.set('lb_' + m.key, merged);
+        }
+      });
+      toast('匯入成功');
+      render();
+    } catch {
+      toast('JSON 格式錯誤');
+    }
+  };
+}
+
+function renderScript() {
+  const roleChecks = ALL_SPEAKERS.map(r => `
+    <label class="checkbox-item" style="padding:6px 10px">
+      <input type="checkbox" value="${r}" ${state.highlightRoles.includes(r) ? 'checked' : ''} class="hl-cb">
+      ${r}
+    </label>
+  `).join('');
+
+  let html = `
+    <h2>📖 完整劇本</h2>
+    <div class="card">
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px">勾選角色後，該角色台詞會高亮顯示</p>
+      <div class="checkbox-group" style="max-height:150px;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:4px">${roleChecks}</div>
+    </div>
+  `;
+  let currentAct = '';
+  RAW_LINES.forEach(l => {
+    if (l.act !== currentAct) {
+      currentAct = l.act;
+      html += `<div class="act-header">${l.act} · ${l.scene}</div>`;
+    } else if (l.scene !== (RAW_LINES[l.order - 1]?.scene)) {
+      html += `<div class="act-header" style="opacity:0.8">${l.act} · ${l.scene}</div>`;
+    }
+    const hl = l.speakers.some(s => state.highlightRoles.includes(s));
+    html += `
+      <div class="script-line ${hl ? 'highlight' : ''}">
+        <span class="spk">${l.speakers.join(' & ')}:</span> ${l.text}
+      </div>
+    `;
+  });
+  app.innerHTML = html;
+  document.querySelectorAll('.hl-cb').forEach(cb => {
+    cb.onchange = () => {
+      state.highlightRoles = [...document.querySelectorAll('.hl-cb:checked')].map(c => c.value);
+      render();
+    };
+  });
+}
+
+// Init
+render();
+  </script>
+</body>
+</html>
